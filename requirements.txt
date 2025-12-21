@@ -1,0 +1,30 @@
+# HTTP 请求和网页解析
+requests
+beautifulsoup4
+lxml
+
+# 数据库
+sqlalchemy
+psycopg2-binary
+
+# 数据处理
+pandas
+numpy
+
+# CLI 工具
+click
+
+# 任务调度
+apscheduler
+
+# 日志管理
+loguru
+
+# 配置管理
+python-dotenv
+pyyaml
+
+# 开发工具（可选）
+pytest
+black
+flake8

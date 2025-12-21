@@ -1,0 +1,744 @@
+{
+  "metadata": {
+    "total_items": 80,
+    "created_at": "2025-12-21",
+    "description": "CS2 热门饰品测试列表",
+    "priority_levels": {
+      "high": "8-10 (高价值、高流动性)",
+      "medium": "5-7 (中等价值)",
+      "low": "1-4 (低价值、冷门)"
+    }
+  },
+  "items": [
+    {
+      "id": 1,
+      "name": "AK-47 | 火蛇 (崭新出厂)",
+      "name_en": "AK-47 | Fire Serpent (Factory New)",
+      "type": "rifle",
+      "rarity": "隐秘",
+      "priority": 10,
+      "estimated_price_range": "50000-100000"
+    },
+    {
+      "id": 2,
+      "name": "AWP | 龙狙 (崭新出厂)",
+      "name_en": "AWP | Dragon Lore (Factory New)",
+      "type": "sniper",
+      "rarity": "隐秘",
+      "priority": 10,
+      "estimated_price_range": "100000-200000"
+    },
+    {
+      "id": 3,
+      "name": "M4A4 | 咆哮 (崭新出厂)",
+      "name_en": "M4A4 | Howl (Factory New)",
+      "type": "rifle",
+      "rarity": "隐秘",
+      "priority": 10,
+      "estimated_price_range": "60000-120000"
+    },
+    {
+      "id": 4,
+      "name": "AK-47 | 二西莫夫 (久经沙场)",
+      "name_en": "AK-47 | Asiimov (Field-Tested)",
+      "type": "rifle",
+      "rarity": "隐秘",
+      "priority": 9,
+      "estimated_price_range": "800-1500"
+    },
+    {
+      "id": 5,
+      "name": "AWP | 二西莫夫 (久经沙场)",
+      "name_en": "AWP | Asiimov (Field-Tested)",
+      "type": "sniper",
+      "rarity": "隐秘",
+      "priority": 9,
+      "estimated_price_range": "1000-1500"
+    },
+    {
+      "id": 6,
+      "name": "AK-47 | 红线 (久经沙场)",
+      "name_en": "AK-47 | Redline (Field-Tested)",
+      "type": "rifle",
+      "rarity": "保密",
+      "priority": 9,
+      "estimated_price_range": "300-400"
+    },
+    {
+      "id": 7,
+      "name": "AWP | 雷击 (崭新出厂)",
+      "name_en": "AWP | Lightning Strike (Factory New)",
+      "type": "sniper",
+      "rarity": "隐秘",
+      "priority": 9,
+      "estimated_price_range": "2000-3000"
+    },
+    {
+      "id": 8,
+      "name": "M4A1消音型 | 金色盘卷 (崭新出厂)",
+      "name_en": "M4A1-S | Golden Coil (Factory New)",
+      "type": "rifle",
+      "rarity": "隐秘",
+      "priority": 8,
+      "estimated_price_range": "1000-1500"
+    },
+    {
+      "id": 9,
+      "name": "Desert Eagle | 印花集 (崭新出厂)",
+      "name_en": "Desert Eagle | Printstream (Factory New)",
+      "type": "pistol",
+      "rarity": "隐秘",
+      "priority": 8,
+      "estimated_price_range": "800-1200"
+    },
+    {
+      "id": 10,
+      "name": "AK-47 | 霓虹骑士 (崭新出厂)",
+      "name_en": "AK-47 | Neon Rider (Factory New)",
+      "type": "rifle",
+      "rarity": "隐秘",
+      "priority": 8,
+      "estimated_price_range": "600-900"
+    },
+    {
+      "id": 11,
+      "name": "AWP | 新星崛起 (崭新出厂)",
+      "name_en": "AWP | Neo-Noir (Factory New)",
+      "type": "sniper",
+      "rarity": "隐秘",
+      "priority": 8,
+      "estimated_price_range": "500-800"
+    },
+    {
+      "id": 12,
+      "name": "M4A4 | 皇帝 (久经沙场)",
+      "name_en": "M4A4 | The Emperor (Field-Tested)",
+      "type": "rifle",
+      "rarity": "隐秘",
+      "priority": 8,
+      "estimated_price_range": "400-600"
+    },
+    {
+      "id": 13,
+      "name": "AK-47 | 血腥运动 (略有磨损)",
+      "name_en": "AK-47 | Bloodsport (Minimal Wear)",
+      "type": "rifle",
+      "rarity": "隐秘",
+      "priority": 7,
+      "estimated_price_range": "400-600"
+    },
+    {
+      "id": 14,
+      "name": "AWP | 狂牙大行动 (久经沙场)",
+      "name_en": "AWP | Wildfire (Field-Tested)",
+      "type": "sniper",
+      "rarity": "隐秘",
+      "priority": 7,
+      "estimated_price_range": "300-500"
+    },
+    {
+      "id": 15,
+      "name": "Glock-18 | 水精灵 (久经沙场)",
+      "name_en": "Glock-18 | Water Elemental (Field-Tested)",
+      "type": "pistol",
+      "rarity": "受限",
+      "priority": 7,
+      "estimated_price_range": "150-200"
+    },
+    {
+      "id": 16,
+      "name": "USP消音版 | 寂静杀手 (崭新出厂)",
+      "name_en": "USP-S | Kill Confirmed (Factory New)",
+      "type": "pistol",
+      "rarity": "隐秘",
+      "priority": 7,
+      "estimated_price_range": "1500-2000"
+    },
+    {
+      "id": 17,
+      "name": "M4A1消音型 | 海波 (崭新出厂)",
+      "name_en": "M4A1-S | Hyper Beast (Factory New)",
+      "type": "rifle",
+      "rarity": "隐秘",
+      "priority": 7,
+      "estimated_price_range": "800-1200"
+    },
+    {
+      "id": 18,
+      "name": "AK-47 | 点线 (崭新出厂)",
+      "name_en": "AK-47 | Point Disarray (Factory New)",
+      "type": "rifle",
+      "rarity": "隐秘",
+      "priority": 7,
+      "estimated_price_range": "300-500"
+    },
+    {
+      "id": 19,
+      "name": "AWP | 石墨 (崭新出厂)",
+      "name_en": "AWP | Graphite (Factory New)",
+      "type": "sniper",
+      "rarity": "受限",
+      "priority": 7,
+      "estimated_price_range": "600-900"
+    },
+    {
+      "id": 20,
+      "name": "M4A4 | 咆哮 (久经沙场)",
+      "name_en": "M4A4 | Howl (Field-Tested)",
+      "type": "rifle",
+      "rarity": "隐秘",
+      "priority": 9,
+      "estimated_price_range": "30000-50000"
+    },
+    {
+      "id": 21,
+      "name": "AK-47 | 野荷 (崭新出厂)",
+      "name_en": "AK-47 | Wild Lotus (Factory New)",
+      "type": "rifle",
+      "rarity": "隐秘",
+      "priority": 10,
+      "estimated_price_range": "30000-50000"
+    },
+    {
+      "id": 22,
+      "name": "AWP | 魅 (崭新出厂)",
+      "name_en": "AWP | Gungnir (Factory New)",
+      "type": "sniper",
+      "rarity": "隐秘",
+      "priority": 10,
+      "estimated_price_range": "80000-120000"
+    },
+    {
+      "id": 23,
+      "name": "Desert Eagle | 烈焰 (崭新出厂)",
+      "name_en": "Desert Eagle | Blaze (Factory New)",
+      "type": "pistol",
+      "rarity": "受限",
+      "priority": 8,
+      "estimated_price_range": "2000-3000"
+    },
+    {
+      "id": 24,
+      "name": "AK-47 | 遗产 (久经沙场)",
+      "name_en": "AK-47 | Inheritance (Field-Tested)",
+      "type": "rifle",
+      "rarity": "隐秘",
+      "priority": 8,
+      "estimated_price_range": "600-900"
+    },
+    {
+      "id": 25,
+      "name": "M4A4 | 龙王 (久经沙场)",
+      "name_en": "M4A4 | Desolate Space (Field-Tested)",
+      "type": "rifle",
+      "rarity": "隐秘",
+      "priority": 7,
+      "estimated_price_range": "300-500"
+    },
+    {
+      "id": 26,
+      "name": "AWP | 粉色DDPAT (久经沙场)",
+      "name_en": "AWP | Pink DDPAT (Field-Tested)",
+      "type": "sniper",
+      "rarity": "受限",
+      "priority": 6,
+      "estimated_price_range": "200-300"
+    },
+    {
+      "id": 27,
+      "name": "P250 | 见龙在野 (崭新出厂)",
+      "name_en": "P250 | See Ya Later (Factory New)",
+      "type": "pistol",
+      "rarity": "隐秘",
+      "priority": 6,
+      "estimated_price_range": "150-250"
+    },
+    {
+      "id": 28,
+      "name": "Galil AR | 糖冲击 (崭新出厂)",
+      "name_en": "Galil AR | Sugar Rush (Factory New)",
+      "type": "rifle",
+      "rarity": "隐秘",
+      "priority": 6,
+      "estimated_price_range": "100-200"
+    },
+    {
+      "id": 29,
+      "name": "FAMAS | 机械工业 (崭新出厂)",
+      "name_en": "FAMAS | Mecha Industries (Factory New)",
+      "type": "rifle",
+      "rarity": "隐秘",
+      "priority": 6,
+      "estimated_price_range": "200-300"
+    },
+    {
+      "id": 30,
+      "name": "MP9 | 狂牙大行动 (崭新出厂)",
+      "name_en": "MP9 | Wildfire (Factory New)",
+      "type": "smg",
+      "rarity": "隐秘",
+      "priority": 5,
+      "estimated_price_range": "80-150"
+    },
+    {
+      "id": 31,
+      "name": "MAC-10 | 霓虹骑士 (崭新出厂)",
+      "name_en": "MAC-10 | Neon Rider (Factory New)",
+      "type": "smg",
+      "rarity": "隐秘",
+      "priority": 5,
+      "estimated_price_range": "60-120"
+    },
+    {
+      "id": 32,
+      "name": "P90 | 二西莫夫 (久经沙场)",
+      "name_en": "P90 | Asiimov (Field-Tested)",
+      "type": "smg",
+      "rarity": "隐秘",
+      "priority": 6,
+      "estimated_price_range": "150-250"
+    },
+    {
+      "id": 33,
+      "name": "AK-47 | 冰封魅影 (久经沙场)",
+      "name_en": "AK-47 | Phantom Disruptor (Field-Tested)",
+      "type": "rifle",
+      "rarity": "隐秘",
+      "priority": 7,
+      "estimated_price_range": "300-500"
+    },
+    {
+      "id": 34,
+      "name": "M4A1消音型 | 血族 (久经沙场)",
+      "name_en": "M4A1-S | Printstream (Field-Tested)",
+      "type": "rifle",
+      "rarity": "隐秘",
+      "priority": 8,
+      "estimated_price_range": "500-800"
+    },
+    {
+      "id": 35,
+      "name": "AWP | 黑色魅影 (久经沙场)",
+      "name_en": "AWP | Oni Taiji (Field-Tested)",
+      "type": "sniper",
+      "rarity": "隐秘",
+      "priority": 7,
+      "estimated_price_range": "400-600"
+    },
+    {
+      "id": 36,
+      "name": "Desert Eagle | 库兹沃尔夫 (崭新出厂)",
+      "name_en": "Desert Eagle | Kumicho Dragon (Factory New)",
+      "type": "pistol",
+      "rarity": "隐秘",
+      "priority": 7,
+      "estimated_price_range": "600-900"
+    },
+    {
+      "id": 37,
+      "name": "USP消音版 | 新星崛起 (崭新出厂)",
+      "name_en": "USP-S | Neo-Noir (Factory New)",
+      "type": "pistol",
+      "rarity": "隐秘",
+      "priority": 7,
+      "estimated_price_range": "400-600"
+    },
+    {
+      "id": 38,
+      "name": "Glock-18 | 二西莫夫 (久经沙场)",
+      "name_en": "Glock-18 | Wasteland Rebel (Field-Tested)",
+      "type": "pistol",
+      "rarity": "隐秘",
+      "priority": 6,
+      "estimated_price_range": "200-300"
+    },
+    {
+      "id": 39,
+      "name": "AK-47 | 铸神圣之地 (久经沙场)",
+      "name_en": "AK-47 | The Empress (Field-Tested)",
+      "type": "rifle",
+      "rarity": "隐秘",
+      "priority": 7,
+      "estimated_price_range": "300-500"
+    },
+    {
+      "id": 40,
+      "name": "M4A4 | 二西莫夫 (久经沙场)",
+      "name_en": "M4A4 | Asiimov (Field-Tested)",
+      "type": "rifle",
+      "rarity": "隐秘",
+      "priority": 8,
+      "estimated_price_range": "600-900"
+    },
+    {
+      "id": 41,
+      "name": "AWP | 赤色新星 (久经沙场)",
+      "name_en": "AWP | Redline (Field-Tested)",
+      "type": "sniper",
+      "rarity": "保密",
+      "priority": 7,
+      "estimated_price_range": "200-350"
+    },
+    {
+      "id": 42,
+      "name": "AK-47 | 燃料喷射器 (久经沙场)",
+      "name_en": "AK-47 | Fuel Injector (Field-Tested)",
+      "type": "rifle",
+      "rarity": "隐秘",
+      "priority": 7,
+      "estimated_price_range": "400-600"
+    },
+    {
+      "id": 43,
+      "name": "M4A1消音型 | 血腥运动 (久经沙场)",
+      "name_en": "M4A1-S | Decimator (Field-Tested)",
+      "type": "rifle",
+      "rarity": "隐秘",
+      "priority": 6,
+      "estimated_price_range": "200-400"
+    },
+    {
+      "id": 44,
+      "name": "AWP | 柯尔特兹 (崭新出厂)",
+      "name_en": "AWP | Corticera (Factory New)",
+      "type": "sniper",
+      "rarity": "受限",
+      "priority": 5,
+      "estimated_price_range": "150-250"
+    },
+    {
+      "id": 45,
+      "name": "Desert Eagle | 机械工业 (崭新出厂)",
+      "name_en": "Desert Eagle | Mecha Industries (Factory New)",
+      "type": "pistol",
+      "rarity": "隐秘",
+      "priority": 7,
+      "estimated_price_range": "500-700"
+    },
+    {
+      "id": 46,
+      "name": "AK-47 | 荒原叛徒 (久经沙场)",
+      "name_en": "AK-47 | Wasteland Rebel (Field-Tested)",
+      "type": "rifle",
+      "rarity": "隐秘",
+      "priority": 7,
+      "estimated_price_range": "400-600"
+    },
+    {
+      "id": 47,
+      "name": "M4A4 | 海波 (久经沙场)",
+      "name_en": "M4A4 | Hellfire (Field-Tested)",
+      "type": "rifle",
+      "rarity": "隐秘",
+      "priority": 6,
+      "estimated_price_range": "200-350"
+    },
+    {
+      "id": 48,
+      "name": "AWP | 野性遗迹 (久经沙场)",
+      "name_en": "AWP | Hyper Beast (Field-Tested)",
+      "type": "sniper",
+      "rarity": "隐秘",
+      "priority": 7,
+      "estimated_price_range": "400-600"
+    },
+    {
+      "id": 49,
+      "name": "P250 | 核子威胁 (崭新出厂)",
+      "name_en": "P250 | Nuclear Threat (Factory New)",
+      "type": "pistol",
+      "rarity": "工业级",
+      "priority": 8,
+      "estimated_price_range": "3000-5000"
+    },
+    {
+      "id": 50,
+      "name": "Five-SeveN | 猴子商业 (略有磨损)",
+      "name_en": "Five-SeveN | Monkey Business (Minimal Wear)",
+      "type": "pistol",
+      "rarity": "隐秘",
+      "priority": 6,
+      "estimated_price_range": "150-250"
+    },
+    {
+      "id": 51,
+      "name": "AK-47 | 黑色层压板 (久经沙场)",
+      "name_en": "AK-47 | Black Laminate (Field-Tested)",
+      "type": "rifle",
+      "rarity": "受限",
+      "priority": 5,
+      "estimated_price_range": "100-180"
+    },
+    {
+      "id": 52,
+      "name": "M4A4 | 城市 DDPAT (崭新出厂)",
+      "name_en": "M4A4 | Buzz Kill (Factory New)",
+      "type": "rifle",
+      "rarity": "隐秘",
+      "priority": 6,
+      "estimated_price_range": "300-500"
+    },
+    {
+      "id": 53,
+      "name": "AWP | 电光束 (久经沙场)",
+      "name_en": "AWP | Electric Hive (Field-Tested)",
+      "type": "sniper",
+      "rarity": "受限",
+      "priority": 5,
+      "estimated_price_range": "120-200"
+    },
+    {
+      "id": 54,
+      "name": "Glock-18 | 渐变之色 (崭新出厂)",
+      "name_en": "Glock-18 | Fade (Factory New)",
+      "type": "pistol",
+      "rarity": "受限",
+      "priority": 8,
+      "estimated_price_range": "2000-3500"
+    },
+    {
+      "id": 55,
+      "name": "USP消音版 | 法老的诅咒 (崭新出厂)",
+      "name_en": "USP-S | Cyrex (Factory New)",
+      "type": "pistol",
+      "rarity": "隐秘",
+      "priority": 6,
+      "estimated_price_range": "200-350"
+    },
+    {
+      "id": 56,
+      "name": "AK-47 | 皇后 (久经沙场)",
+      "name_en": "AK-47 | Slate (Field-Tested)",
+      "type": "rifle",
+      "rarity": "隐秘",
+      "priority": 5,
+      "estimated_price_range": "100-200"
+    },
+    {
+      "id": 57,
+      "name": "M4A1消音型 | 梦魇 (崭新出厂)",
+      "name_en": "M4A1-S | Nightmare (Factory New)",
+      "type": "rifle",
+      "rarity": "隐秘",
+      "priority": 6,
+      "estimated_price_range": "250-400"
+    },
+    {
+      "id": 58,
+      "name": "AWP | 死神 (久经沙场)",
+      "name_en": "AWP | Fever Dream (Field-Tested)",
+      "type": "sniper",
+      "rarity": "隐秘",
+      "priority": 6,
+      "estimated_price_range": "200-350"
+    },
+    {
+      "id": 59,
+      "name": "Desert Eagle | 阴谋 (崭新出厂)",
+      "name_en": "Desert Eagle | Conspiracy (Factory New)",
+      "type": "pistol",
+      "rarity": "保密",
+      "priority": 4,
+      "estimated_price_range": "50-100"
+    },
+    {
+      "id": 60,
+      "name": "P90 | 死亡之握 (崭新出厂)",
+      "name_en": "P90 | Death Grip (Factory New)",
+      "type": "smg",
+      "rarity": "隐秘",
+      "priority": 5,
+      "estimated_price_range": "120-200"
+    },
+    {
+      "id": 61,
+      "name": "AK-47 | 守护神 (略有磨损)",
+      "name_en": "AK-47 | Rat Rod (Minimal Wear)",
+      "type": "rifle",
+      "rarity": "隐秘",
+      "priority": 5,
+      "estimated_price_range": "150-250"
+    },
+    {
+      "id": 62,
+      "name": "M4A4 | 新星崛起 (久经沙场)",
+      "name_en": "M4A4 | Neo-Noir (Field-Tested)",
+      "type": "rifle",
+      "rarity": "隐秘",
+      "priority": 7,
+      "estimated_price_range": "300-500"
+    },
+    {
+      "id": 63,
+      "name": "AWP | 天火 (久经沙场)",
+      "name_en": "AWP | Elite Build (Field-Tested)",
+      "type": "sniper",
+      "rarity": "受限",
+      "priority": 4,
+      "estimated_price_range": "50-100"
+    },
+    {
+      "id": 64,
+      "name": "Glock-18 | 暮色银河 (崭新出厂)",
+      "name_en": "Glock-18 | Twilight Galaxy (Factory New)",
+      "type": "pistol",
+      "rarity": "隐秘",
+      "priority": 6,
+      "estimated_price_range": "200-350"
+    },
+    {
+      "id": 65,
+      "name": "USP消音版 | 蛇咬 (崭新出厂)",
+      "name_en": "USP-S | Printstream (Factory New)",
+      "type": "pistol",
+      "rarity": "隐秘",
+      "priority": 8,
+      "estimated_price_range": "800-1200"
+    },
+    {
+      "id": 66,
+      "name": "AK-47 | 极地网格 (久经沙场)",
+      "name_en": "AK-47 | Orbit Mk01 (Field-Tested)",
+      "type": "rifle",
+      "rarity": "隐秘",
+      "priority": 6,
+      "estimated_price_range": "150-250"
+    },
+    {
+      "id": 67,
+      "name": "M4A1消音型 | 欢乐浅紫 (略有磨损)",
+      "name_en": "M4A1-S | Player Two (Minimal Wear)",
+      "type": "rifle",
+      "rarity": "隐秘",
+      "priority": 6,
+      "estimated_price_range": "200-350"
+    },
+    {
+      "id": 68,
+      "name": "AWP | 海波 (久经沙场)",
+      "name_en": "AWP | Chromatic Aberration (Field-Tested)",
+      "type": "sniper",
+      "rarity": "隐秘",
+      "priority": 6,
+      "estimated_price_range": "200-350"
+    },
+    {
+      "id": 69,
+      "name": "Desert Eagle | 日落风暴 (崭新出厂)",
+      "name_en": "Desert Eagle | Sunset Storm 弐 (Factory New)",
+      "type": "pistol",
+      "rarity": "隐秘",
+      "priority": 7,
+      "estimated_price_range": "500-800"
+    },
+    {
+      "id": 70,
+      "name": "P250 | 超导 (崭新出厂)",
+      "name_en": "P250 | Asiimov (Factory New)",
+      "type": "pistol",
+      "rarity": "隐秘",
+      "priority": 5,
+      "estimated_price_range": "150-250"
+    },
+    {
+      "id": 71,
+      "name": "MP9 | 海波 (崭新出厂)",
+      "name_en": "MP9 | Hyper Beast (Factory New)",
+      "type": "smg",
+      "rarity": "隐秘",
+      "priority": 5,
+      "estimated_price_range": "100-180"
+    },
+    {
+      "id": 72,
+      "name": "MAC-10 | 渐变之色 (崭新出厂)",
+      "name_en": "MAC-10 | Fade (Factory New)",
+      "type": "smg",
+      "rarity": "受限",
+      "priority": 6,
+      "estimated_price_range": "300-500"
+    },
+    {
+      "id": 73,
+      "name": "AK-47 | 精英之作 (崭新出厂)",
+      "name_en": "AK-47 | Elite Build (Factory New)",
+      "type": "rifle",
+      "rarity": "受限",
+      "priority": 4,
+      "estimated_price_range": "60-120"
+    },
+    {
+      "id": 74,
+      "name": "M4A4 | 赤红钢铁 (久经沙场)",
+      "name_en": "M4A4 | Radiation Hazard (Field-Tested)",
+      "type": "rifle",
+      "rarity": "工业级",
+      "priority": 5,
+      "estimated_price_range": "200-350"
+    },
+    {
+      "id": 75,
+      "name": "AWP | 精英之作 (崭新出厂)",
+      "name_en": "AWP | Capillary (Factory New)",
+      "type": "sniper",
+      "rarity": "受限",
+      "priority": 5,
+      "estimated_price_range": "80-150"
+    },
+    {
+      "id": 76,
+      "name": "Five-SeveN | 新星崛起 (崭新出厂)",
+      "name_en": "Five-SeveN | Hyper Beast (Factory New)",
+      "type": "pistol",
+      "rarity": "隐秘",
+      "priority": 5,
+      "estimated_price_range": "120-200"
+    },
+    {
+      "id": 77,
+      "name": "Tec-9 | 燃料喷射器 (崭新出厂)",
+      "name_en": "Tec-9 | Fuel Injector (Factory New)",
+      "type": "pistol",
+      "rarity": "隐秘",
+      "priority": 5,
+      "estimated_price_range": "120-200"
+    },
+    {
+      "id": 78,
+      "name": "CZ75 | 维多利亚 (崭新出厂)",
+      "name_en": "CZ75-Auto | Victoria (Factory New)",
+      "type": "pistol",
+      "rarity": "保密",
+      "priority": 6,
+      "estimated_price_range": "800-1200"
+    },
+    {
+      "id": 79,
+      "name": "P2000 | 海波 (崭新出厂)",
+      "name_en": "P2000 | Fire Elemental (Factory New)",
+      "type": "pistol",
+      "rarity": "隐秘",
+      "priority": 6,
+      "estimated_price_range": "400-600"
+    },
+    {
+      "id": 80,
+      "name": "FAMAS | 全能枪师 (崭新出厂)",
+      "name_en": "FAMAS | Roll Cage (Factory New)",
+      "type": "rifle",
+      "rarity": "隐秘",
+      "priority": 4,
+      "estimated_price_range": "60-120"
+    }
+  ],
+  "summary": {
+    "priority_10": 3,
+    "priority_9": 3,
+    "priority_8": 9,
+    "priority_7": 18,
+    "priority_6": 21,
+    "priority_5": 15,
+    "priority_4": 11,
+    "total": 80
+  }
+}
