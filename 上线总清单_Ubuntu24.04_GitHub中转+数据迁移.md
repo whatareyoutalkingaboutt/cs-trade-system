@@ -1,15 +1,18 @@
 # CS-Item-Scraper 上线总清单（Ubuntu-24.04.1-x64）
 
-适用流程：`本地代码 -> GitHub -> 服务器拉代码部署 -> (可选)本地数据库迁移到服务器`
+适用流程：`本地代码 -> Gitee(主) + GitHub(备) -> 服务器从 Gitee 拉代码部署 -> (可选)数据库迁移`
 
 ## 0. 关键说明
 - 不会直接把本地 Docker 容器/镜像/volume 搬到服务器。
 - 服务器会用拉到的代码重新 `docker compose build/up`。
 - 如需历史数据，需要单独迁移数据库（推荐只迁移 PostgreSQL）。
+- 代码源策略：
+  - 主源：`https://gitee.com/glzhxz/cs-trade-system.git`
+  - 备用：`https://github.com/whatareyoutalkingaboutt/cs-trade-system.git`
 
 ---
 
-## 1. 本地：提交代码到 GitHub
+## 1. 本地：提交并同步到 Gitee + GitHub
 
 ```bash
 cd /Users/gaolaozhuanghouxianzi/cs-item-scraper
@@ -18,6 +21,7 @@ git checkout -b release/ubuntu2404-deploy
 git add .
 git commit -m "deploy: ubuntu 24.04 production rollout"
 git push -u origin release/ubuntu2404-deploy
+git push -u gitee release/ubuntu2404-deploy
 ```
 
 如需合并到主分支：
@@ -25,6 +29,13 @@ git push -u origin release/ubuntu2404-deploy
 git checkout main
 git merge --no-ff release/ubuntu2404-deploy
 git push origin main
+git push gitee main
+```
+
+如需覆盖旧版本（强制推送）：
+```bash
+git push origin main --force
+git push gitee main --force
 ```
 
 ---
@@ -59,7 +70,7 @@ sudo ufw --force enable
 ```bash
 sudo mkdir -p /opt && sudo chown "$USER":"$USER" /opt
 cd /opt
-git clone <你的GitHub仓库URL> cs-item-scraper
+git clone https://gitee.com/glzhxz/cs-trade-system.git cs-item-scraper
 cd cs-item-scraper
 ```
 
@@ -165,4 +176,14 @@ git checkout main
 git pull
 docker compose up -d --build
 docker compose logs --tail=100 api ws-server frontend celery-worker celery-beat
+```
+
+如 Gitee 临时不可用，切换到 GitHub：
+```bash
+cd /opt/cs-item-scraper
+git remote set-url origin https://github.com/whatareyoutalkingaboutt/cs-trade-system.git
+git fetch --all
+git checkout main
+git pull
+docker compose up -d --build
 ```
