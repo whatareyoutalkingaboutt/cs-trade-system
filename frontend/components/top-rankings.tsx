@@ -10,10 +10,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 type RankingItem = {
   id: number;
   market_hash_name: string;
+  name_cn?: string | null;
   image_url?: string | null;
-  price?: number;
+  price?: number | null;
   volume?: number;
   change_pct?: number;
+  rank_num?: number;
+  rank_num_change?: number;
+  turnover_number?: number;
 };
 
 type RankingResponse = {
@@ -60,7 +64,7 @@ export function TopRankings() {
               )}
               onClick={() => setTab("gainers")}
             >
-              涨幅榜
+              变化榜
             </button>
             <button
               type="button"
@@ -85,6 +89,9 @@ export function TopRankings() {
               const price = Number(item.price || 0);
               const change = Number(item.change_pct || 0);
               const volume = Number(item.volume || 0);
+              const rankNo = Number(item.rank_num || 0);
+              const rankChange = Number(item.rank_num_change || 0);
+              const showPrice = Number.isFinite(price) && price > 0;
               return (
                 <div key={`${tab}-${item.id}-${index}`} className="flex items-center justify-between gap-3">
                   <div className="min-w-0 flex items-center gap-3">
@@ -101,19 +108,28 @@ export function TopRankings() {
                     )}
                     <div className="min-w-0">
                       <p className="truncate text-sm text-slate-100" title={item.market_hash_name}>
-                        {item.market_hash_name}
+                        {item.name_cn || item.market_hash_name}
                       </p>
-                      <p className="text-xs text-slate-400">¥{price.toFixed(2)}</p>
+                      <p className="text-xs text-slate-400">
+                        {showPrice ? `¥${price.toFixed(2)}` : `热度排名 #${rankNo > 0 ? rankNo : "-"}`}
+                      </p>
                     </div>
                   </div>
                   <div className="text-right">
                     {tab === "gainers" ? (
-                      <p className={cn("text-sm font-semibold", change >= 0 ? "text-emerald-300" : "text-red-300")}>
-                        {change >= 0 ? "+" : ""}
-                        {change.toFixed(2)}%
+                      <p
+                        className={cn(
+                          "text-sm font-semibold",
+                          rankChange >= 0 ? "text-emerald-300" : "text-red-300",
+                        )}
+                      >
+                        {rankChange >= 0 ? "+" : ""}
+                        {Number.isFinite(rankChange) ? rankChange : change} 位
                       </p>
                     ) : (
-                      <p className="text-sm font-semibold text-sky-300">{volume.toLocaleString()} 件</p>
+                      <p className="text-sm font-semibold text-sky-300">
+                        {(Number(item.turnover_number || volume) || 0).toLocaleString()} 件
+                      </p>
                     )}
                   </div>
                 </div>

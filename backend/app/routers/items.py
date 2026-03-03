@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Optional
+from typing import Any, Optional
 
 import os
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -10,6 +10,7 @@ from backend.app.dependencies import get_current_user
 from backend.core.cache import get_json
 from backend.core.database import get_sessionmaker
 from backend.models import Item, User
+from backend.scrapers.csqaq_scraper import CSQAQScraper
 from backend.services.base_sync_service import sync_base_items
 from backend.services.item_detail_service import fetch_item_detail, fetch_item_detail_from_csqaq
 from backend.services.search_service import search_items
@@ -71,6 +72,36 @@ class ItemPriorityUpdate(BaseModel):
 
 def _use_csqaq_detail() -> bool:
     return DETAIL_ITEMS_SOURCE == "csqaq" and CSQAQ_PURE_DETAIL
+
+
+def _to_int(value: Any, default: int = 0) -> int:
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return int(default)
+
+
+def _normalize_popular_goods_row(raw: dict[str, Any]) -> Optional[dict[str, Any]]:
+    market_hash_name = str(raw.get("market_hash_name") or "").strip()
+    if not market_hash_name:
+        return None
+
+    rank_num = _to_int(raw.get("rank_num"), 0)
+    rank_num_change = _to_int(raw.get("rank_num_change"), 0)
+    turnover_number = _to_int(raw.get("turnover_number"), 0)
+    return {
+        "id": _to_int(raw.get("id"), 0),
+        "name_cn": str(raw.get("name") or "").strip() or None,
+        "market_hash_name": market_hash_name,
+        "rank_num": rank_num,
+        "rank_num_change": rank_num_change,
+        "turnover_number": turnover_number,
+        # 兼容前端旧字段
+        "volume": turnover_number,
+        "change_pct": float(rank_num_change),
+        "price": None,
+        "image_url": None,
+    }
 
 
 @router.get("/api/items")
@@ -193,16 +224,59 @@ def sync_items_base(
 
 
 @router.get("/api/items/rankings")
-def get_item_rankings() -> dict:
+def get_item_rankings(
+    limit: int = Query(default=50, ge=1, le=200),
+    source: str = Query(default="direct"),
+) -> dict:
     """
-    获取 24H 热门饰品排行（涨幅榜与活跃榜）。
-    数据由 Celery 定时计算并写入缓存，这里仅做缓存直出。
+    获取热门饰品排行。
+    - source=direct: 直调 CSQAQ 企业接口（推荐）
+    - source=cache: 读取本地缓存榜单
+    - source=auto: 先直调，失败后回退缓存
     """
+    source_mode = (source or "direct").strip().lower()
+    if source_mode not in {"direct", "cache", "auto"}:
+        raise HTTPException(status_code=400, detail="source must be direct/cache/auto")
+
+    if source_mode in {"direct", "auto"}:
+        try:
+            with CSQAQScraper() as scraper:
+                raw_rows = scraper.get_popular_goods()
+
+            hot_rankings: list[dict[str, Any]] = []
+            for row in raw_rows:
+                normalized = _normalize_popular_goods_row(row)
+                if normalized is not None:
+                    hot_rankings.append(normalized)
+                if len(hot_rankings) >= limit:
+                    break
+
+            top_volume = sorted(hot_rankings, key=lambda item: _to_int(item.get("turnover_number")), reverse=True)
+            top_gainers = sorted(hot_rankings, key=lambda item: _to_int(item.get("rank_num_change")), reverse=True)
+            return {
+                "success": True,
+                "source": "csqaq_direct",
+                "hot_rankings": hot_rankings,
+                "top_gainers": top_gainers[:limit],
+                "top_volume": top_volume[:limit],
+                "meta": {
+                    "mode": "direct",
+                    "limit": limit,
+                },
+            }
+        except Exception as exc:
+            if source_mode == "direct":
+                raise HTTPException(status_code=502, detail=f"CSQAQ popular goods request failed: {exc}") from exc
+
     gainers = get_json("rankings:top_gainers") or []
     volume = get_json("rankings:top_volume") or []
     meta = get_json("rankings:meta") or {}
+    gainers = gainers[:limit]
+    volume = volume[:limit]
     return {
         "success": True,
+        "source": "cache",
+        "hot_rankings": volume,
         "top_gainers": gainers,
         "top_volume": volume,
         "meta": meta,

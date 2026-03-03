@@ -44,6 +44,7 @@ class CSQAQScraper(BaseScraper):
     ALL_GOODS_INFO_ENDPOINT = "/api/v1/goods/get_all_goods_info"
     GOODS_TEMPLATE_ENDPOINT = "/api/v1/goods/get_goods_template"
     CHART_ALL_ENDPOINT = "/api/v1/info/simple/chartAll"
+    POPULAR_GOODS_ENDPOINT = "/api/v1/info/get_popular_goods"
 
     def __init__(
         self,
@@ -180,6 +181,12 @@ class CSQAQScraper(BaseScraper):
             payload["max_time"] = int(max_time)
 
         data = self._post(self.CHART_ALL_ENDPOINT, payload=payload)
+        if not isinstance(data, list):
+            return []
+        return [row for row in data if isinstance(row, dict)]
+
+    def get_popular_goods(self) -> List[Dict[str, Any]]:
+        data = self._post(self.POPULAR_GOODS_ENDPOINT, payload={})
         if not isinstance(data, list):
             return []
         return [row for row in data if isinstance(row, dict)]
