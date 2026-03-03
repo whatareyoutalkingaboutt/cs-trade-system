@@ -1,0 +1,20 @@
+{
+  "secret-v": "h5_v1",
+  "sec-ch-ua-platform": "\"macOS\"",
+  "sec-ch-ua": "\"Not:A-Brand\";v=\"99\", \"HeadlessChrome\";v=\"145\", \"Chromium\";v=\"145\"",
+  "sec-ch-ua-mobile": "?0",
+  "deviceid": "8a1867b1-02e2-4490-b6cb-346b0b2aaee4",
+  "traceparent": "00-d719888bbc0f411e8c1126a03b31f085-2ef7a280c020154e-01",
+  "apptype": "1",
+  "appversion": "5.26.0",
+  "app-version": "5.26.0",
+  "deviceuk": "5Hq4hp4RVnYkWsPMfRwPKNzSTwBfTDpnc0W7MEPZivHNjBtR8RhadDwcn6e48Tt1M",
+  "accept": "application/json, text/plain, */*",
+  "content-type": "application/json",
+  "tracestate": "rum=v2&browser&hwztx6svg3@74450dd02fdbfcd&656f2b69feb6424e9fd0fe04e2a06036&uid_rfcy3rqj7el7wv33",
+  "platform": "pc",
+  "uk": "5HpvjUmV6OM9t8cgUt9naDsWjkO8fNFLFcF7ZXzcCky4R9ELnFqt91baoOSdsgn1L",
+  "referer": "https://www.youpin898.com/",
+  "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36",
+  "b3": "d719888bbc0f411e8c1126a03b31f085-2ef7a280c020154e-1"
+}

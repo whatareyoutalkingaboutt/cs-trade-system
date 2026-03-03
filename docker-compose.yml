@@ -1,0 +1,157 @@
+services:
+  timescaledb:
+    image: timescale/timescaledb:latest-pg15
+    container_name: cs-timescaledb
+    environment:
+      POSTGRES_DB: cs_items
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      TIMESCALEDB_TELEMETRY: "off"
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - ./data/timescaledb:/var/lib/postgresql/data
+      - ./backend/database/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./backend/database/postgresql.conf:/etc/postgresql/postgresql.conf:ro
+    command: postgres -c config_file=/etc/postgresql/postgresql.conf
+    restart: unless-stopped
+
+  dragonflydb:
+    image: docker.dragonflydb.io/dragonflydb/dragonfly:latest
+    container_name: cs-dragonfly
+    ulimits:
+      memlock: -1
+    ports:
+      - "127.0.0.1:6379:6379"
+    volumes:
+      - ./data/dragonfly:/data
+    command: dragonfly --dir /data --requirepass ${DRAGONFLY_PASSWORD} --snapshot_cron "*/30 * * * *" --maxmemory 200mb --cache_mode=true
+    restart: unless-stopped
+
+  api:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: cs-api
+    env_file:
+      - .env
+    environment:
+      DB_HOST: timescaledb
+      DB_PORT: "5432"
+      DB_NAME: cs_items
+      DB_USER: postgres
+      DB_PASSWORD: ${DB_PASSWORD}
+      DATABASE_URL: postgresql://postgres:${DB_PASSWORD}@timescaledb:5432/cs_items
+      ASYNC_DATABASE_URL: postgresql+asyncpg://postgres:${DB_PASSWORD}@timescaledb:5432/cs_items
+      DRAGONFLYDB_HOST: dragonflydb
+      DRAGONFLYDB_PORT: "6379"
+      DRAGONFLYDB_PASSWORD: ${DRAGONFLY_PASSWORD}
+      DRAGONFLYDB_DB: "0"
+      DRAGONFLY_URL: redis://:${DRAGONFLY_PASSWORD}@dragonflydb:6379/0
+    depends_on:
+      - timescaledb
+      - dragonflydb
+    ports:
+      - "127.0.0.1:8000:8000"
+    volumes:
+      - .:/app
+    command: uvicorn backend.app.main:app --host 0.0.0.0 --port 8000
+    restart: unless-stopped
+
+  ws-server:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: cs-ws-server
+    env_file:
+      - .env
+    environment:
+      DB_HOST: timescaledb
+      DB_PORT: "5432"
+      DB_NAME: cs_items
+      DB_USER: postgres
+      DB_PASSWORD: ${DB_PASSWORD}
+      DATABASE_URL: postgresql://postgres:${DB_PASSWORD}@timescaledb:5432/cs_items
+      ASYNC_DATABASE_URL: postgresql+asyncpg://postgres:${DB_PASSWORD}@timescaledb:5432/cs_items
+      DRAGONFLYDB_HOST: dragonflydb
+      DRAGONFLYDB_PORT: "6379"
+      DRAGONFLYDB_PASSWORD: ${DRAGONFLY_PASSWORD}
+      DRAGONFLYDB_DB: "0"
+      DRAGONFLY_URL: redis://:${DRAGONFLY_PASSWORD}@dragonflydb:6379/0
+    depends_on:
+      - timescaledb
+      - dragonflydb
+    ports:
+      - "127.0.0.1:8001:8001"
+    volumes:
+      - .:/app
+    command: uvicorn backend.app.ws_server:app --host 0.0.0.0 --port 8001
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    container_name: cs-frontend
+    depends_on:
+      - api
+      - ws-server
+    ports:
+      - "127.0.0.1:3000:3000"
+    restart: unless-stopped
+
+  celery-worker:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: cs-celery-worker
+    env_file:
+      - .env
+    environment:
+      DB_HOST: timescaledb
+      DB_PORT: "5432"
+      DB_NAME: cs_items
+      DB_USER: postgres
+      DB_PASSWORD: ${DB_PASSWORD}
+      DATABASE_URL: postgresql://postgres:${DB_PASSWORD}@timescaledb:5432/cs_items
+      ASYNC_DATABASE_URL: postgresql+asyncpg://postgres:${DB_PASSWORD}@timescaledb:5432/cs_items
+      DRAGONFLYDB_HOST: dragonflydb
+      DRAGONFLYDB_PORT: "6379"
+      DRAGONFLYDB_PASSWORD: ${DRAGONFLY_PASSWORD}
+      DRAGONFLYDB_DB: "0"
+      DRAGONFLY_URL: redis://:${DRAGONFLY_PASSWORD}@dragonflydb:6379/0
+    depends_on:
+      - timescaledb
+      - dragonflydb
+    volumes:
+      - .:/app
+    command: celery -A backend.core.celery_app worker --loglevel=INFO --concurrency=${CELERY_WORKER_CONCURRENCY:-2} --max-tasks-per-child=1000 --pool=prefork --queues=default,steam,buff,verify --hostname=worker@%h
+    restart: unless-stopped
+
+  celery-beat:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: cs-celery-beat
+    env_file:
+      - .env
+    environment:
+      DB_HOST: timescaledb
+      DB_PORT: "5432"
+      DB_NAME: cs_items
+      DB_USER: postgres
+      DB_PASSWORD: ${DB_PASSWORD}
+      DATABASE_URL: postgresql://postgres:${DB_PASSWORD}@timescaledb:5432/cs_items
+      ASYNC_DATABASE_URL: postgresql+asyncpg://postgres:${DB_PASSWORD}@timescaledb:5432/cs_items
+      DRAGONFLYDB_HOST: dragonflydb
+      DRAGONFLYDB_PORT: "6379"
+      DRAGONFLYDB_PASSWORD: ${DRAGONFLY_PASSWORD}
+      DRAGONFLYDB_DB: "0"
+      DRAGONFLY_URL: redis://:${DRAGONFLY_PASSWORD}@dragonflydb:6379/0
+    depends_on:
+      - timescaledb
+      - dragonflydb
+    volumes:
+      - .:/app
+    command: celery -A backend.core.celery_app beat --loglevel=INFO --scheduler celery.beat:PersistentScheduler
+    restart: unless-stopped

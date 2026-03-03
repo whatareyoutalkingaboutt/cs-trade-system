@@ -1,0 +1,110 @@
+[
+  {
+    "ts": 1770191626.3147972,
+    "event": "request",
+    "url": "https://buff.163.com/api/message/notification?_=1770191626195",
+    "method": "GET",
+    "resource_type": "xhr",
+    "headers": {
+      "sec-ch-ua-platform": "\"macOS\"",
+      "referer": "https://buff.163.com/goods/35650?from=market",
+      "x-requested-with": "XMLHttpRequest",
+      "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+      "accept": "*/*",
+      "sec-ch-ua": "\"Chromium\";v=\"145\", \"Not:A-Brand\";v=\"99\"",
+      "sec-ch-ua-mobile": "?0"
+    },
+    "post_data": null
+  },
+  {
+    "ts": 1770191626.314979,
+    "event": "request",
+    "url": "https://buff.163.com/api/market/goods_tab_list?goods_id=35650&_=1770191626196",
+    "method": "GET",
+    "resource_type": "xhr",
+    "headers": {
+      "sec-ch-ua-platform": "\"macOS\"",
+      "referer": "https://buff.163.com/goods/35650?from=market",
+      "x-requested-with": "XMLHttpRequest",
+      "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+      "accept": "*/*",
+      "sec-ch-ua": "\"Chromium\";v=\"145\", \"Not:A-Brand\";v=\"99\"",
+      "sec-ch-ua-mobile": "?0"
+    },
+    "post_data": null
+  },
+  {
+    "ts": 1770191626.354073,
+    "event": "response",
+    "url": "https://buff.163.com/api/message/notification?_=1770191626195",
+    "status": 200,
+    "status_text": "",
+    "headers": {
+      "ntes-trace-id": "8cda4a52ddc9ce07:8cda4a52ddc9ce07:0:0",
+      "content-encoding": "gzip",
+      "date": "Wed, 04 Feb 2026 07:53:46 GMT",
+      "x-envoy-upstream-service-time": "5",
+      "content-type": "application/json",
+      "server": "nginx"
+    },
+    "request_method": "GET",
+    "resource_type": "xhr",
+    "body": "{\"code\": \"OK\", \"data\": {\"unread_message\": {\"total\": 0}, \"to_deliver_order\": {\"dota2\": 0, \"pubg\": 0}, \"to_receive_order\": {\"dota2\": 0, \"pubg\": 0}, \"unread_feedback_replay\": {\"total\": 0}, \"unread_system_message\": {\"total\": 0}, \"unread_social_message\": {\"total\": 0}, \"unread_social_comment_message\": {\"total\": 0}, \"unread_social_up_message\": {\"total\": 0}, \"new_roll_room\": {\"has_new\": false}, \"new_coupon\": {\"total\": 0}, \"unread_sell_bargain_chat_message\": {\"dota2\": 0, \"pubg\": 0}, \"unread_buy_bargain_chat_message\": {\"dota2\": 0, \"pubg\": 0}, \"to_send_offer_order\": {\"dota2\": 0, \"pubg\": 0}, \"to_accept_offer_order\": {\"dota2\": 0, \"pubg\": 0}, \"to_handle_bargain\": {\"dota2\": 0, \"pubg\": 0}, \"to_pay_order\": {\"dota2\": 0, \"pubg\": 0}, \"to_pay_bargain\": {\"dota2\": 0, \"pubg\": 0}, \"to_pay_buy_order\": {\"dota2\": 0, \"pubg\": 0}, \"fast_supply\": {\"dota2\": 0, \"pubg\": 0}, \"to_confirm_buy\": {\"dota2\": 0, \"pubg\": 0}, \"to_confirm_sell\": {\"dota2\": 0, \"pubg\": 0}, \"to_deliver_rent\": {\"dota2\": 0, \"pubg\": 0}, \"to_send_offer_rent\": {\"dota2\": 0, \"pubg\": 0}, \"to_accept_offer_rent\": {\"dota2\": 0, \"pubg\": 0}, \"to_receive_return_rent\": {\"dota2\": 0, \"pubg\": 0}, \"to_pay_rent\": {\"dota2\": 0, \"pubg\": 0}, \"to_return_rent\": {\"dota2\": 0, \"pubg\": 0}, \"auction_buyer\": {\"dota2\": 0, \"pubg\": 0}, \"auction_seller\": {\"dota2\": 0, \"pubg\": 0}, \"auction_buyer_end\": {\"dota2\": 0, \"pubg\": 0}, \"to_deliver_pre_sell\": {\"dota2\": 0, \"pubg\": 0}, \"updated_at\": {}}, \"msg\": null}",
+    "body_truncated": false
+  },
+  {
+    "ts": 1770191626.3831522,
+    "event": "request",
+    "url": "https://buff.163.com/api/market/goods/buy_order?game=csgo&goods_id=35650&page_num=1&_=1770191626197",
+    "method": "GET",
+    "resource_type": "xhr",
+    "headers": {
+      "sec-ch-ua-platform": "\"macOS\"",
+      "referer": "https://buff.163.com/goods/35650?from=market",
+      "x-requested-with": "XMLHttpRequest",
+      "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+      "accept": "application/json, text/javascript, */*; q=0.01",
+      "sec-ch-ua": "\"Chromium\";v=\"145\", \"Not:A-Brand\";v=\"99\"",
+      "sec-ch-ua-mobile": "?0"
+    },
+    "post_data": null
+  },
+  {
+    "ts": 1770191626.383604,
+    "event": "response",
+    "url": "https://buff.163.com/api/market/goods_tab_list?goods_id=35650&_=1770191626196",
+    "status": 200,
+    "status_text": "",
+    "headers": {
+      "ntes-trace-id": "44b7a4d7bffee248:44b7a4d7bffee248:0:0",
+      "content-length": "673",
+      "date": "Wed, 04 Feb 2026 07:53:46 GMT",
+      "x-envoy-upstream-service-time": "9",
+      "content-type": "application/json",
+      "server": "nginx"
+    },
+    "request_method": "GET",
+    "resource_type": "xhr",
+    "body": "{\"code\":\"OK\",\"data\":{\"all_tabs\":[{\"text\":\"\u5f53\u524d\u5728\u552e\",\"name\":\"selling\",\"id\":1},{\"text\":\"\u6025\u552e\",\"name\":\"auction\",\"id\":2},{\"text\":\"\u9884\u552e\",\"name\":\"pre_sell\",\"id\":11},{\"text\":\"\u51fa\u79df\",\"name\":\"rent\",\"id\":3},{\"text\":\"\u6253\u5305\u51fa\u552e\",\"name\":\"bundle\",\"id\":4},{\"text\":\"\u6c42\u8d2d\",\"name\":\"buying\",\"id\":5},{\"text\":\"\u73a9\u5bb6\u79c0\",\"name\":\"user_preview\",\"id\":6},{\"text\":\"\u78e8\u635f\u6392\u884c\",\"name\":\"paint_rank\",\"id\":7},{\"text\":\"\u6210\u4ea4\u8bb0\u5f55\",\"name\":\"trade_history\",\"id\":8},{\"text\":\"\u4ef7\u683c\u8d70\u52bf\",\"name\":\"price_trend\",\"id\":9},{\"text\":\"\u76f8\u5173\u63a8\u8350\",\"name\":\"recommend\",\"id\":10}],\"goods_tab_ids\":[1,4,5,6,7,8,9,10],\"default_platform_tabs\":[1,2,11,3,4,5,6,7,8,9,10],\"hide_tab_ids\":[3,11]},\"msg\":null}\n",
+    "body_truncated": false
+  },
+  {
+    "ts": 1770191626.47963,
+    "event": "response",
+    "url": "https://buff.163.com/api/market/goods/buy_order?game=csgo&goods_id=35650&page_num=1&_=1770191626197",
+    "status": 200,
+    "status_text": "",
+    "headers": {
+      "ntes-trace-id": "375b161d589bb700:375b161d589bb700:0:0",
+      "content-encoding": "gzip",
+      "date": "Wed, 04 Feb 2026 07:53:46 GMT",
+      "x-envoy-upstream-service-time": "39",
+      "content-type": "application/json",
+      "server": "nginx"
+    },
+    "request_method": "GET",
+    "resource_type": "xhr",
+    "body": "{\"code\":\"OK\",\"data\":{\"page_num\":1,\"page_size\":10,\"total_page\":2,\"total_count\":11,\"items\":[{\"appid\":730,\"game\":\"csgo\",\"id\":\"260204T1439876884\",\"user_id\":\"U1100624683\",\"num\":4,\"real_num\":0,\"frozen_num\":0,\"state\":\"progressing\",\"goods_id\":35650,\"price\":\"6.6\",\"fee\":\"0\",\"frozen_amount\":\"26.4\",\"created_at\":1770188139,\"updated_at\":1770188139,\"allow_tradable_cooldown\":0,\"tradable_cooldown\":null,\"specific\":[],\"icon_url\":\"https://market.fp.ps.netease.com/file/65f58497e5e1676bd5aaeec0B6gYdbo705?fop=imageView/6/f/webp/q/75\",\"pay_expire_timeout\":-1,\"expire_time\":null,\"pay_method_text\":\"\u5148\u6c42\u540e\u4ed8\",\"pay_method\":60,\"state_text\":\"\u6b63\u5728\u6c42\u8d2d\"},{\"appid\":730,\"game\":\"csgo\",\"id\":\"260128T1442123925\",\"user_id\":\"U1085694478\",\"num\":1,\"real_num\":0,\"frozen_num\":0,\"state\":\"progressing\",\"goods_id\":35650,\"price\":\"5.9\",\"fee\":\"0\",\"frozen_amount\":\"5.9\",\"created_at\":1769567419,\"updated_at\":1769567424,\"allow_tradable_cooldown\":0,\"tradable_cooldown\":null,\"specific\":[],\"icon_url\":\"https://market.fp.ps.netease.com/file/65f58497e5e1676bd5aaeec0B6gYdbo705?fop=imageView/6/f/webp/q/75\",\"pay_expire_timeout\":-1,\"expire_time\":1772159424,\"pay_method_text\":\"\u7f51\u6613\u652f\u4ed8\",\"pay_method\":45,\"state_text\":\"\u6b63\u5728\u6c42\u8d2d\"},{\"appid\":730,\"game\":\"csgo\",\"id\":\"260124T1441447243\",\"user_id\":\"U1075133502\",\"num\":2,\"real_num\":1,\"frozen_num\":0,\"state\":\"progressing\",\"goods_id\":35650,\"price\":\"5.8\",\"fee\":\"0\",\"frozen_amount\":\"11.6\",\"created_at\":1769242822,\"updated_at\":1769473146,\"allow_tradable_cooldown\":0,\"tradable_cooldown\":null,\"specific\":[],\"icon_url\":\"https://market.fp.ps.netease.com/file/65f58497e5e1676bd5aaeec0B6gYdbo705?fop=imageView/6/f/webp/q/75\",\"pay_expire_timeout\":-1,\"expire_time\":null,\"pay_method_text\":\"\u5148\u6c42\u540e\u4ed8\",\"pay_method\":60,\"state_text\":\"\u6b63\u5728\u6c42\u8d2d\"},{\"appid\":730,\"game\":\"csgo\",\"id\":\"260122T1435535493\",\"user_id\":\"U1083016135\",\"num\":4,\"real_num\":0,\"frozen_num\":0,\"state\":\"progressing\",\"goods_id\":35650,\"price\":\"5.5\",\"fee\":\"0\",\"frozen_amount\":\"22\",\"created_at\":1769059135,\"updated_at\":1769059135,\"allow_tradable_cooldown\":0,\"tradable_cooldown\":null,\"specific\":[],\"icon_url\":\"https://market.fp.ps.netease.com/file/65f58497e5e1676bd5aaeec0B6gYdbo705?fop=imageView/6/f/webp/q/75\",\"pay_expire_timeout\":-1,\"expire_time\":null,\"pay_method_text\":\"\u5148\u6c42\u540e\u4ed8\",\"pay_method\":60,\"state_text\":\"\u6b63\u5728\u6c42\u8d2d\"},{\"appid\":730,\"game\":\"csgo\",\"id\":\"260129T1441948399\",\"user_id\":\"U1100166160\",\"num\":1,\"real_num\":0,\"frozen_num\":0,\"state\":\"progressing\",\"goods_id\":35650,\"price\":\"5\",\"fee\":\"0\",\"frozen_amount\":\"5\",\"created_at\":1769650428,\"updated_at\":1769650428,\"allow_tradable_cooldown\":0,\"tradable_cooldown\":null,\"specific\":[],\"icon_url\":\"https://market.fp.ps.netease.com/file/65f58497e5e1676bd5aaeec0B6gYdbo705?fop=imageView/6/f/webp/q/75\",\"pay_expire_timeout\":-1,\"expire_time\":null,\"pay_method_text\":\"\u5148\u6c42\u540e\u4ed8\",\"pay_method\":60,\"state_text\":\"\u6b63\u5728\u6c42\u8d2d\"},{\"appid\":730,\"game\":\"csgo\",\"id\":\"251026T1377305658\",\"user_id\":\"U1099889672\",\"num\":2,\"real_num\":0,\"frozen_num\":0,\"state\":\"progressing\",\"goods_id\":35650,\"price\":\"4.1\",\"fee\":\"0\",\"frozen_amount\":\"8.2\",\"created_at\":1761455629,\"updated_at\":1761455629,\"allow_tradable_cooldown\":0,\"tradable_cooldown\":null,\"specific\":[],\"icon_url\":\"https://market.fp.ps.netease.com/file/65f58497e5e1676bd5aaeec0B6gYdbo705?fop=imageView/6/f/webp/q/75\",\"pay_expire_timeout\":-1,\"expire_time\":null,\"pay_method_text\":\"BUFF\u4f59\u989d\uff08\u53ef\u63d0\u73b0\u5230\u94f6\u884c\u5361\uff09\",\"pay_method\":1,\"state_text\":\"\u6b63\u5728\u6c42\u8d2d\"},{\"appid\":730,\"game\":\"csgo\",\"id\":\"260114T1437894450\",\"user_id\":\"U1083881432\",\"num\":1,\"real_num\":0,\"frozen_num\":0,\"state\":\"progressing\",\"goods_id\":35650,\"price\":\"4\",\"fee\":\"0\",\"frozen_amount\":\"4\",\"created_at\":1768326912,\"updated_at\":1768326912,\"allow_tradable_cooldown\":0,\"tradable_cooldown\":null,\"specific\":[],\"icon_url\":\"https://market.fp.ps.netease.com/file/65f58497e5e1676bd5aaeec0B6gYdbo705?fop=imageView/6/f/webp/q/75\",\"pay_expire_timeout\":-1,\"expire_time\":null,\"pay_method_text\":\"BUFF\u4f59\u989d\uff08\u53ef\u63d0\u73b0\u5230\u94f6\u884c\u5361\uff09\",\"pay_method\":1,\"state_text\":\"\u6b63\u5728\u6c42\u8d2d\"},{\"appid\":730,\"game\":\"csgo\",\"id\":\"251028T1377121429\",\"user_id\":\"U1077825506\",\"num\":1,\"real_num\":0,\"frozen_num\":0,\"state\":\"progressing\",\"goods_id\":35650,\"price\":\"3.5\",\"fee\":\"0\",\"frozen_amount\":\"3.5\",\"created_at\":1761585889,\"updated_at\":1761585889,\"allow_tradable_cooldown\":0,\"tradable_cooldown\":null,\"specific\":[],\"icon_url\":\"https://market.fp.ps.netease.com/file/65f58497e5e1676bd5aaeec0B6gYdbo705?fop=imageView/6/f/webp/q/75\",\"pay_expire_timeout\":-1,\"expire_time\":null,\"pay_method_text\":\"\u5148\u6c42\u540e\u4ed8\",\"pay_method\":60,\"state_text\":\"\u6b63\u5728\u6c42\u8d2d\"},{\"appid\":730,\"game\":\"csgo\",\"id\":\"251025T1375869967\",\"user_id\":\"U1086096391\",\"num\":1,\"real_num\":0,\"frozen_num\":0,\"state\":\"progressing\",\"goods_id\":35650,\"price\":\"2.1\",\"fee\":\"0\",\"frozen_amount\":\"2.1\",\"created_at\":1761327400,\"updated_at\":1761327400,\"allow_tradable_cooldown\":0,\"tradable_cooldown\":null,\"specific\":[],\"icon_url\":\"https://market.fp.ps.netease.com/file/65f58497e5e1676bd5aaeec0B6gYdbo705?fop=imageView/6/f/webp/q/75\",\"pay_expire_timeout\":-1,\"expire_time\":null,\"pay_method_text\":\"\u5148\u6c42\u540e\u4ed8\",\"pay_method\":60,\"state_text\":\"\u6b63\u5728\u6c42\u8d2d\"},{\"appid\":730,\"game\":\"csgo\",\"id\":\"251111T1381771044\",\"user_id\":\"U1103521272\",\"num\":1,\"real_num\":0,\"frozen_num\":0,\"state\":\"progressing\",\"goods_id\":35650,\"price\":\"2\",\"fee\":\"0\",\"frozen_amount\":\"2\",\"created_at\":1762799171,\"updated_at\":1762799171,\"allow_tradable_cooldown\":0,\"tradable_cooldown\":null,\"specific\":[],\"icon_url\":\"https://market.fp.ps.netease.com/file/65f58497e5e1676bd5aaeec0B6gYdbo705?fop=imageView/6/f/webp/q/75\",\"pay_expire_timeout\":-1,\"expire_time\":null,\"pay_method_text\":\"\u5148\u6c42\u540e\u4ed8\",\"pay_method\":60,\"state_text\":\"\u6b63\u5728\u6c42\u8d2d\"}],\"user_infos\":{\"U1075133502\":{\"user_id\":\"U1075133502\",\"avatar\":\"https://market.fp.ps.netease.com/file/646d6b2a5a209875e0f55801q9vAcMcO04?fop=imageView/6/f/webp/q/75\",\"shop_id\":\"1075133502\",\"avatar_safe\":\"https://market.fp.ps.netease.com/file/646d6b2a5a209875e0f55801q9vAcMcO04?fop=imageView/6/f/webp/q/75\",\"nickname\":\"FastDelivery66\",\"is_auto_accept\":false,\"seller_level\":0,\"v_types\":[\"premium\"],\"is_premium_vip\":true},\"U1083881432\":{\"user_id\":\"U1083881432\",\"avatar\":\"https://market.fp.ps.netease.com/file/646d3a2ebb51423998862c2breEoFhOE04?fop=imageView/6/f/webp/q/75\",\"shop_id\":\"1083881432\",\"avatar_safe\":\"https://market.fp.ps.netease.com/file/646d3a2ebb51423998862c2breEoFhOE04?fop=imageView/6/f/webp/q/75\",\"nickname\":\"U24312944127\",\"is_auto_accept\":false,\"seller_level\":0,\"v_types\":null,\"is_premium_vip\":false},\"U1100166160\":{\"user_id\":\"U1100166160\",\"avatar\":\"https://g.fp.ps.netease.com/market/file/639ab1d33b12f8a0d720c256pYbdLgNh04?fop=imageView/6/f/webp/q/75\",\"shop_id\":\"1100166160\",\"avatar_safe\":\"https://g.fp.ps.netease.com/market/file/639ab1d33b12f8a0d720c256pYbdLgNh04?fop=imageView/6/f/webp/q/75\",\"nickname\":\"U95679311341\",\"is_auto_accept\":false,\"seller_level\":0,\"v_types\":null,\"is_premium_vip\":false},\"U1083016135\":{\"user_id\":\"U1083016135\",\"avatar\":\"https://market.fp.ps.netease.com/file/646d619022c75f22f49a3782H3vIOO8q04?fop=imageView/6/f/webp/q/75\",\"shop_id\":\"1083016135\",\"avatar_safe\":\"https://market.fp.ps.netease.com/file/646d619022c75f22f49a3782H3vIOO8q04?fop=imageView/6/f/webp/q/75\",\"nickname\":\"U26446978187\",\"is_auto_accept\":false,\"seller_level\":0,\"v_types\":null,\"is_premium_vip\":false},\"U1085694478\":{\"user_id\":\"U1085694478\",\"avatar\":\"https://market.fp.ps.netease.com/file/646d3a2ebb51423998862c2breEoFhOE04?fop=imageView/6/f/webp/q/75\",\"shop_id\":\"1085694478\",\"avatar_safe\":\"https://market.fp.ps.netease.com/file/646d3a2ebb51423998862c2breEoFhOE04?fop=imageView/6/f/webp/q/75\",\"nickname\":\"U74362274715\",\"is_auto_accept\":false,\"seller_level\":0,\"v_types\":null,\"is_premium_vip\":false},\"U1086096391\":{\"user_id\":\"U1086096391\",\"avatar\":\"https://market.fp.ps.netease.com/file/67c550e8991b500eb87288c6ID4RdFaS06?fop=imageView/6/f/webp/q/75\",\"shop_id\":\"1086096391\",\"avatar_safe\":\"https://market.fp.ps.netease.com/file/67c550e8991b500eb87288c6ID4RdFaS06?fop=imageView/6/f/webp/q/75\",\"nickname\":\"U12858701213\",\"is_auto_accept\":false,\"seller_level\":0,\"v_types\":null,\"is_premium_vip\":false},\"U1100624683\":{\"user_id\":\"U1100624683\",\"avatar\":\"https://market.fp.ps.netease.com/file/68e2fea6c8af237e90025e87ioppLrs306?fop=imageView/6/f/webp/q/75\",\"shop_id\":\"1100624683\",\"avatar_safe\":\"https://market.fp.ps.netease.com/file/68e2fea6c8af237e90025e87ioppLrs306?fop=imageView/6/f/webp/q/75\",\"nickname\":\"\u5c0f\u4ef6153\",\"is_auto_accept\":false,\"seller_level\":0,\"v_types\":[\"premium\"],\"is_premium_vip\":true},\"U1099889672\":{\"user_id\":\"U1099889672\",\"avatar\":\"https://g.fp.ps.netease.com/market/file/6303b7b03fc7c99acec0837dTf983oS204?fop=imageView/6/f/webp/q/75\",\"shop_id\":\"1099889672\",\"avatar_safe\":\"https://g.fp.ps.netease.com/market/file/6303b7b03fc7c99acec0837dTf983oS204?fop=imageView/6/f/webp/q/75\",\"nickname\":\"Rantrea\",\"is_auto_accept\":false,\"seller_level\":0,\"v_types\":null,\"is_premium_vip\":false},\"U1077825506\":{\"user_id\":\"U1077825506\",\"avatar\":\"https://market.fp.ps.netease.com/file/68ccc356b6c385928fe778df8iZjiMuW06?fop=imageView/6/f/webp/q/75\",\"shop_id\":\"1077825506\",\"avatar_safe\":\"https://market.fp.ps.netease.com/file/68ccc356b6c385928fe778df8iZjiMuW06?fop=imageView/6/f/webp/q/75\",\"nickname\":\"Blueelse\",\"is_auto_accept\":false,\"seller_level\":0,\"v_types\":null,\"is_premium_vip\":false},\"U1103521272\":{\"user_id\":\"U1103521272\",\"avatar\":\"https://market.fp.ps.netease.com/file/6471da16b611a99b30664647TMx81Y5a04?fop=imageView/6/f/webp/q/75\",\"shop_id\":\"1103521272\",\"avatar_safe\":\"https://market.fp.ps.netease.com/file/6471da16b611a99b30664647TMx81Y5a04?fop=imageView/6/f/webp/q/75\",\"nickname\":\"\u4f55\u5fc5\u68a6\u4e2d\u7eed\u60c5\u613f\",\"is_auto_accept\":false,\"seller_level\":0,\"v_types\":null,\"is_premium_vip\":false}},\"show_pay_method_icon\":true},\"msg\":null}\n",
+    "body_truncated": false
+  }
+]

@@ -25,6 +25,11 @@ venv/
 ENV/
 env/
 
+# Frontend
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+
 # IDE
 .idea/
 .vscode/
@@ -67,3 +72,12 @@ test_results_*.json
 # 项目特定
 data/validation/*.json
 data/*.db
+data/timescaledb/
+data/dragonfly/
+
+# 本地工具与运行时产物
+.codex/
+.claude/
+celerybeat-schedule
+celerybeat-schedule-shm
+celerybeat-schedule-wal

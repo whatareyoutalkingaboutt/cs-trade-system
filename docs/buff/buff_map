@@ -1,0 +1,935 @@
+{
+  "generated_at": "2026-02-18T09:55:11.021895+00:00",
+  "source": {
+    "goods_ids_count": 24513,
+    "map_limit": 120,
+    "map_delay_sec": 0.2,
+    "map_retries": 4,
+    "map_backoff_sec": 1.2
+  },
+  "stats": {
+    "mapped_count": 65,
+    "unresolved_count": 55
+  },
+  "goods_id_to_cn": {
+    "33685": {
+      "goods_id": "33685",
+      "name_cn": "印花 | 麻将·百中",
+      "name_cn_base": "印花 | 麻将·百中",
+      "wear_cn": null,
+      "short_name_cn": "印花 | 麻将·百中",
+      "market_hash_name": "Sticker | Mahjong Zhong"
+    },
+    "33687": {
+      "goods_id": "33687",
+      "name_cn": "印花 | 肉食主义",
+      "name_cn_base": "印花 | 肉食主义",
+      "wear_cn": null,
+      "short_name_cn": "印花 | 肉食主义",
+      "market_hash_name": "Sticker | Non-Veg"
+    },
+    "33811": {
+      "goods_id": "33811",
+      "name_cn": "M4A4 | 杀意大名 (久经沙场)",
+      "name_cn_base": "M4A4 | 杀意大名",
+      "wear_cn": "久经沙场",
+      "short_name_cn": "M4A4 | 杀意大名",
+      "market_hash_name": "M4A4 | Evil Daimyo (Field-Tested)"
+    },
+    "33813": {
+      "goods_id": "33813",
+      "name_cn": "幻彩武器箱",
+      "name_cn_base": "幻彩武器箱",
+      "wear_cn": null,
+      "short_name_cn": "幻彩武器箱",
+      "market_hash_name": "Chroma Case"
+    },
+    "33815": {
+      "goods_id": "33815",
+      "name_cn": "Tec-9 | 冰冠 (崭新出厂)",
+      "name_cn_base": "Tec-9 | 冰冠",
+      "wear_cn": "崭新出厂",
+      "short_name_cn": "Tec-9 | 冰冠",
+      "market_hash_name": "Tec-9 | Ice Cap (Factory New)"
+    },
+    "33816": {
+      "goods_id": "33816",
+      "name_cn": "MAC-10 | 青金鳄皮 (略有磨损)",
+      "name_cn_base": "MAC-10 | 青金鳄皮",
+      "wear_cn": "略有磨损",
+      "short_name_cn": "MAC-10 | 青金鳄皮",
+      "market_hash_name": "MAC-10 | Lapis Gator (Minimal Wear)"
+    },
+    "33819": {
+      "goods_id": "33819",
+      "name_cn": "AUG | 众枪之的 (久经沙场)",
+      "name_cn_base": "AUG | 众枪之的",
+      "wear_cn": "久经沙场",
+      "short_name_cn": "AUG | 众枪之的",
+      "market_hash_name": "AUG | Condemned (Field-Tested)"
+    },
+    "33820": {
+      "goods_id": "33820",
+      "name_cn": "幻彩 3 号武器箱",
+      "name_cn_base": "幻彩 3 号武器箱",
+      "wear_cn": null,
+      "short_name_cn": "幻彩 3 号武器箱",
+      "market_hash_name": "Chroma 3 Case"
+    },
+    "33822": {
+      "goods_id": "33822",
+      "name_cn": "CZ75自动型 | 聚合物 (久经沙场)",
+      "name_cn_base": "CZ75自动型 | 聚合物",
+      "wear_cn": "久经沙场",
+      "short_name_cn": "CZ75自动型 | 聚合物",
+      "market_hash_name": "CZ75-Auto | Polymer (Field-Tested)"
+    },
+    "33823": {
+      "goods_id": "33823",
+      "name_cn": "MP9 | 生化泄漏 (崭新出厂)",
+      "name_cn_base": "MP9 | 生化泄漏",
+      "wear_cn": "崭新出厂",
+      "short_name_cn": "MP9 | 生化泄漏",
+      "market_hash_name": "MP9 | Bioleak (Factory New)"
+    },
+    "33824": {
+      "goods_id": "33824",
+      "name_cn": "MAC-10 | 银质 (崭新出厂)",
+      "name_cn_base": "MAC-10 | 银质",
+      "wear_cn": "崭新出厂",
+      "short_name_cn": "MAC-10 | 银质",
+      "market_hash_name": "MAC-10 | Silver (Factory New)"
+    },
+    "33825": {
+      "goods_id": "33825",
+      "name_cn": "弯曲猎手武器箱",
+      "name_cn_base": "弯曲猎手武器箱",
+      "wear_cn": null,
+      "short_name_cn": "弯曲猎手武器箱",
+      "market_hash_name": "Falchion Case"
+    },
+    "33826": {
+      "goods_id": "33826",
+      "name_cn": "印花 | Gambit Esports | 2018年波士顿锦标赛",
+      "name_cn_base": "印花 | Gambit Esports | 2018年波士顿锦标赛",
+      "wear_cn": null,
+      "short_name_cn": "印花 | Gambit Esports | 2018年波士顿锦标赛",
+      "market_hash_name": "Sticker | Gambit Esports | Boston 2018"
+    },
+    "33830": {
+      "goods_id": "33830",
+      "name_cn": "FN57 | 橘皮涂装 (略有磨损)",
+      "name_cn_base": "FN57 | 橘皮涂装",
+      "wear_cn": "略有磨损",
+      "short_name_cn": "FN57 | 橘皮涂装",
+      "market_hash_name": "Five-SeveN | Orange Peel (Minimal Wear)"
+    },
+    "33831": {
+      "goods_id": "33831",
+      "name_cn": "沙漠之鹰 | 泥地杀手 (久经沙场)",
+      "name_cn_base": "沙漠之鹰 | 泥地杀手",
+      "wear_cn": "久经沙场",
+      "short_name_cn": "沙漠之鹰 | 泥地杀手",
+      "market_hash_name": "Desert Eagle | Mudder (Field-Tested)"
+    },
+    "33834": {
+      "goods_id": "33834",
+      "name_cn": "沙漠之鹰 | 泥地杀手 (略有磨损)",
+      "name_cn_base": "沙漠之鹰 | 泥地杀手",
+      "wear_cn": "略有磨损",
+      "short_name_cn": "沙漠之鹰 | 泥地杀手",
+      "market_hash_name": "Desert Eagle | Mudder (Minimal Wear)"
+    },
+    "33835": {
+      "goods_id": "33835",
+      "name_cn": "P2000 | 草皮 (久经沙场)",
+      "name_cn_base": "P2000 | 草皮",
+      "wear_cn": "久经沙场",
+      "short_name_cn": "P2000 | 草皮",
+      "market_hash_name": "P2000 | Turf (Field-Tested)"
+    },
+    "33836": {
+      "goods_id": "33836",
+      "name_cn": "沙漠之鹰 | 锈蚀烈焰 (崭新出厂)",
+      "name_cn_base": "沙漠之鹰 | 锈蚀烈焰",
+      "wear_cn": "崭新出厂",
+      "short_name_cn": "沙漠之鹰 | 锈蚀烈焰",
+      "market_hash_name": "Desert Eagle | Oxide Blaze (Factory New)"
+    },
+    "33838": {
+      "goods_id": "33838",
+      "name_cn": "沙漠之鹰 | 都市瓦砾 (久经沙场)",
+      "name_cn_base": "沙漠之鹰 | 都市瓦砾",
+      "wear_cn": "久经沙场",
+      "short_name_cn": "沙漠之鹰 | 都市瓦砾",
+      "market_hash_name": "Desert Eagle | Urban Rubble (Field-Tested)"
+    },
+    "33839": {
+      "goods_id": "33839",
+      "name_cn": "MP7 | 都市危机 (崭新出厂)",
+      "name_cn_base": "MP7 | 都市危机",
+      "wear_cn": "崭新出厂",
+      "short_name_cn": "MP7 | 都市危机",
+      "market_hash_name": "MP7 | Urban Hazard (Factory New)"
+    },
+    "33841": {
+      "goods_id": "33841",
+      "name_cn": "FN57 | 霸意大名 (崭新出厂)",
+      "name_cn_base": "FN57 | 霸意大名",
+      "wear_cn": "崭新出厂",
+      "short_name_cn": "FN57 | 霸意大名",
+      "market_hash_name": "Five-SeveN | Violent Daimyo (Factory New)"
+    },
+    "33868": {
+      "goods_id": "33868",
+      "name_cn": "AK-47 | 血腥运动 (崭新出厂)",
+      "name_cn_base": "AK-47 | 血腥运动",
+      "wear_cn": "崭新出厂",
+      "short_name_cn": "AK-47 | 血腥运动",
+      "market_hash_name": "AK-47 | Bloodsport (Factory New)"
+    },
+    "33869": {
+      "goods_id": "33869",
+      "name_cn": "AK-47 | 血腥运动 (久经沙场)",
+      "name_cn_base": "AK-47 | 血腥运动",
+      "wear_cn": "久经沙场",
+      "short_name_cn": "AK-47 | 血腥运动",
+      "market_hash_name": "AK-47 | Bloodsport (Field-Tested)"
+    },
+    "33871": {
+      "goods_id": "33871",
+      "name_cn": "AK-47 | 血腥运动 (破损不堪)",
+      "name_cn_base": "AK-47 | 血腥运动",
+      "wear_cn": "破损不堪",
+      "short_name_cn": "AK-47 | 血腥运动",
+      "market_hash_name": "AK-47 | Bloodsport (Well-Worn)"
+    },
+    "33872": {
+      "goods_id": "33872",
+      "name_cn": "AK-47 | 蓝色层压板 (崭新出厂)",
+      "name_cn_base": "AK-47 | 蓝色层压板",
+      "wear_cn": "崭新出厂",
+      "short_name_cn": "AK-47 | 蓝色层压板",
+      "market_hash_name": "AK-47 | Blue Laminate (Factory New)"
+    },
+    "33873": {
+      "goods_id": "33873",
+      "name_cn": "AK-47 | 蓝色层压板 (久经沙场)",
+      "name_cn_base": "AK-47 | 蓝色层压板",
+      "wear_cn": "久经沙场",
+      "short_name_cn": "AK-47 | 蓝色层压板",
+      "market_hash_name": "AK-47 | Blue Laminate (Field-Tested)"
+    },
+    "33878": {
+      "goods_id": "33878",
+      "name_cn": "AK-47 | 卡特尔 (略有磨损)",
+      "name_cn_base": "AK-47 | 卡特尔",
+      "wear_cn": "略有磨损",
+      "short_name_cn": "AK-47 | 卡特尔",
+      "market_hash_name": "AK-47 | Cartel (Minimal Wear)"
+    },
+    "33879": {
+      "goods_id": "33879",
+      "name_cn": "AK-47 | 卡特尔 (破损不堪)",
+      "name_cn_base": "AK-47 | 卡特尔",
+      "wear_cn": "破损不堪",
+      "short_name_cn": "AK-47 | 卡特尔",
+      "market_hash_name": "AK-47 | Cartel (Well-Worn)"
+    },
+    "33880": {
+      "goods_id": "33880",
+      "name_cn": "AK-47 | 表面淬火 (战痕累累)",
+      "name_cn_base": "AK-47 | 表面淬火",
+      "wear_cn": "战痕累累",
+      "short_name_cn": "AK-47 | 表面淬火",
+      "market_hash_name": "AK-47 | Case Hardened (Battle-Scarred)"
+    },
+    "33881": {
+      "goods_id": "33881",
+      "name_cn": "AK-47 | 表面淬火 (崭新出厂)",
+      "name_cn_base": "AK-47 | 表面淬火",
+      "wear_cn": "崭新出厂",
+      "short_name_cn": "AK-47 | 表面淬火",
+      "market_hash_name": "AK-47 | Case Hardened (Factory New)"
+    },
+    "33882": {
+      "goods_id": "33882",
+      "name_cn": "AK-47 | 表面淬火 (久经沙场)",
+      "name_cn_base": "AK-47 | 表面淬火",
+      "wear_cn": "久经沙场",
+      "short_name_cn": "AK-47 | 表面淬火",
+      "market_hash_name": "AK-47 | Case Hardened (Field-Tested)"
+    },
+    "33887": {
+      "goods_id": "33887",
+      "name_cn": "AK-47 | 精英之作 (略有磨损)",
+      "name_cn_base": "AK-47 | 精英之作",
+      "wear_cn": "略有磨损",
+      "short_name_cn": "AK-47 | 精英之作",
+      "market_hash_name": "AK-47 | Elite Build (Minimal Wear)"
+    },
+    "33888": {
+      "goods_id": "33888",
+      "name_cn": "AK-47 | 精英之作 (破损不堪)",
+      "name_cn_base": "AK-47 | 精英之作",
+      "wear_cn": "破损不堪",
+      "short_name_cn": "AK-47 | 精英之作",
+      "market_hash_name": "AK-47 | Elite Build (Well-Worn)"
+    },
+    "33889": {
+      "goods_id": "33889",
+      "name_cn": "AK-47 | 翡翠细条纹 (战痕累累)",
+      "name_cn_base": "AK-47 | 翡翠细条纹",
+      "wear_cn": "战痕累累",
+      "short_name_cn": "AK-47 | 翡翠细条纹",
+      "market_hash_name": "AK-47 | Emerald Pinstripe (Battle-Scarred)"
+    },
+    "33890": {
+      "goods_id": "33890",
+      "name_cn": "AK-47 | 翡翠细条纹 (崭新出厂)",
+      "name_cn_base": "AK-47 | 翡翠细条纹",
+      "wear_cn": "崭新出厂",
+      "short_name_cn": "AK-47 | 翡翠细条纹",
+      "market_hash_name": "AK-47 | Emerald Pinstripe (Factory New)"
+    },
+    "33891": {
+      "goods_id": "33891",
+      "name_cn": "AK-47 | 翡翠细条纹 (久经沙场)",
+      "name_cn_base": "AK-47 | 翡翠细条纹",
+      "wear_cn": "久经沙场",
+      "short_name_cn": "AK-47 | 翡翠细条纹",
+      "market_hash_name": "AK-47 | Emerald Pinstripe (Field-Tested)"
+    },
+    "33892": {
+      "goods_id": "33892",
+      "name_cn": "AK-47 | 翡翠细条纹 (略有磨损)",
+      "name_cn_base": "AK-47 | 翡翠细条纹",
+      "wear_cn": "略有磨损",
+      "short_name_cn": "AK-47 | 翡翠细条纹",
+      "market_hash_name": "AK-47 | Emerald Pinstripe (Minimal Wear)"
+    },
+    "33894": {
+      "goods_id": "33894",
+      "name_cn": "AK-47 | 火蛇 (战痕累累)",
+      "name_cn_base": "AK-47 | 火蛇",
+      "wear_cn": "战痕累累",
+      "short_name_cn": "AK-47 | 火蛇",
+      "market_hash_name": "AK-47 | Fire Serpent (Battle-Scarred)"
+    },
+    "33895": {
+      "goods_id": "33895",
+      "name_cn": "AK-47 | 火蛇 (崭新出厂)",
+      "name_cn_base": "AK-47 | 火蛇",
+      "wear_cn": "崭新出厂",
+      "short_name_cn": "AK-47 | 火蛇",
+      "market_hash_name": "AK-47 | Fire Serpent (Factory New)"
+    },
+    "33897": {
+      "goods_id": "33897",
+      "name_cn": "AK-47 | 火蛇 (略有磨损)",
+      "name_cn_base": "AK-47 | 火蛇",
+      "wear_cn": "略有磨损",
+      "short_name_cn": "AK-47 | 火蛇",
+      "market_hash_name": "AK-47 | Fire Serpent (Minimal Wear)"
+    },
+    "33898": {
+      "goods_id": "33898",
+      "name_cn": "AK-47 | 火蛇 (破损不堪)",
+      "name_cn_base": "AK-47 | 火蛇",
+      "wear_cn": "破损不堪",
+      "short_name_cn": "AK-47 | 火蛇",
+      "market_hash_name": "AK-47 | Fire Serpent (Well-Worn)"
+    },
+    "33899": {
+      "goods_id": "33899",
+      "name_cn": "AK-47 | 至高皮革 (战痕累累)",
+      "name_cn_base": "AK-47 | 至高皮革",
+      "wear_cn": "战痕累累",
+      "short_name_cn": "AK-47 | 至高皮革",
+      "market_hash_name": "AK-47 | First Class (Battle-Scarred)"
+    },
+    "33900": {
+      "goods_id": "33900",
+      "name_cn": "AK-47 | 至高皮革 (崭新出厂)",
+      "name_cn_base": "AK-47 | 至高皮革",
+      "wear_cn": "崭新出厂",
+      "short_name_cn": "AK-47 | 至高皮革",
+      "market_hash_name": "AK-47 | First Class (Factory New)"
+    },
+    "33901": {
+      "goods_id": "33901",
+      "name_cn": "AK-47 | 至高皮革 (久经沙场)",
+      "name_cn_base": "AK-47 | 至高皮革",
+      "wear_cn": "久经沙场",
+      "short_name_cn": "AK-47 | 至高皮革",
+      "market_hash_name": "AK-47 | First Class (Field-Tested)"
+    },
+    "33902": {
+      "goods_id": "33902",
+      "name_cn": "AK-47 | 至高皮革 (略有磨损)",
+      "name_cn_base": "AK-47 | 至高皮革",
+      "wear_cn": "略有磨损",
+      "short_name_cn": "AK-47 | 至高皮革",
+      "market_hash_name": "AK-47 | First Class (Minimal Wear)"
+    },
+    "33903": {
+      "goods_id": "33903",
+      "name_cn": "AK-47 | 至高皮革 (破损不堪)",
+      "name_cn_base": "AK-47 | 至高皮革",
+      "wear_cn": "破损不堪",
+      "short_name_cn": "AK-47 | 至高皮革",
+      "market_hash_name": "AK-47 | First Class (Well-Worn)"
+    },
+    "33905": {
+      "goods_id": "33905",
+      "name_cn": "AK-47 | 前线迷雾 (崭新出厂)",
+      "name_cn_base": "AK-47 | 前线迷雾",
+      "wear_cn": "崭新出厂",
+      "short_name_cn": "AK-47 | 前线迷雾",
+      "market_hash_name": "AK-47 | Frontside Misty (Factory New)"
+    },
+    "33906": {
+      "goods_id": "33906",
+      "name_cn": "AK-47 | 前线迷雾 (久经沙场)",
+      "name_cn_base": "AK-47 | 前线迷雾",
+      "wear_cn": "久经沙场",
+      "short_name_cn": "AK-47 | 前线迷雾",
+      "market_hash_name": "AK-47 | Frontside Misty (Field-Tested)"
+    },
+    "33907": {
+      "goods_id": "33907",
+      "name_cn": "AK-47 | 前线迷雾 (略有磨损)",
+      "name_cn_base": "AK-47 | 前线迷雾",
+      "wear_cn": "略有磨损",
+      "short_name_cn": "AK-47 | 前线迷雾",
+      "market_hash_name": "AK-47 | Frontside Misty (Minimal Wear)"
+    },
+    "33908": {
+      "goods_id": "33908",
+      "name_cn": "AK-47 | 前线迷雾 (破损不堪)",
+      "name_cn_base": "AK-47 | 前线迷雾",
+      "wear_cn": "破损不堪",
+      "short_name_cn": "AK-47 | 前线迷雾",
+      "market_hash_name": "AK-47 | Frontside Misty (Well-Worn)"
+    },
+    "33909": {
+      "goods_id": "33909",
+      "name_cn": "AK-47 | 燃料喷射器 (战痕累累)",
+      "name_cn_base": "AK-47 | 燃料喷射器",
+      "wear_cn": "战痕累累",
+      "short_name_cn": "AK-47 | 燃料喷射器",
+      "market_hash_name": "AK-47 | Fuel Injector (Battle-Scarred)"
+    },
+    "33914": {
+      "goods_id": "33914",
+      "name_cn": "AK-47 | 水栽竹 (战痕累累)",
+      "name_cn_base": "AK-47 | 水栽竹",
+      "wear_cn": "战痕累累",
+      "short_name_cn": "AK-47 | 水栽竹",
+      "market_hash_name": "AK-47 | Hydroponic (Battle-Scarred)"
+    },
+    "33915": {
+      "goods_id": "33915",
+      "name_cn": "AK-47 | 水栽竹 (崭新出厂)",
+      "name_cn_base": "AK-47 | 水栽竹",
+      "wear_cn": "崭新出厂",
+      "short_name_cn": "AK-47 | 水栽竹",
+      "market_hash_name": "AK-47 | Hydroponic (Factory New)"
+    },
+    "33917": {
+      "goods_id": "33917",
+      "name_cn": "AK-47 | 水栽竹 (略有磨损)",
+      "name_cn_base": "AK-47 | 水栽竹",
+      "wear_cn": "略有磨损",
+      "short_name_cn": "AK-47 | 水栽竹",
+      "market_hash_name": "AK-47 | Hydroponic (Minimal Wear)"
+    },
+    "33918": {
+      "goods_id": "33918",
+      "name_cn": "AK-47 | 水栽竹 (破损不堪)",
+      "name_cn_base": "AK-47 | 水栽竹",
+      "wear_cn": "破损不堪",
+      "short_name_cn": "AK-47 | 水栽竹",
+      "market_hash_name": "AK-47 | Hydroponic (Well-Worn)"
+    },
+    "33919": {
+      "goods_id": "33919",
+      "name_cn": "AK-47 | 美洲猛虎 (战痕累累)",
+      "name_cn_base": "AK-47 | 美洲猛虎",
+      "wear_cn": "战痕累累",
+      "short_name_cn": "AK-47 | 美洲猛虎",
+      "market_hash_name": "AK-47 | Jaguar (Battle-Scarred)"
+    },
+    "33920": {
+      "goods_id": "33920",
+      "name_cn": "AK-47 | 美洲猛虎 (崭新出厂)",
+      "name_cn_base": "AK-47 | 美洲猛虎",
+      "wear_cn": "崭新出厂",
+      "short_name_cn": "AK-47 | 美洲猛虎",
+      "market_hash_name": "AK-47 | Jaguar (Factory New)"
+    },
+    "33924": {
+      "goods_id": "33924",
+      "name_cn": "AK-47 | 酷炫涂鸦皮革 (战痕累累)",
+      "name_cn_base": "AK-47 | 酷炫涂鸦皮革",
+      "wear_cn": "战痕累累",
+      "short_name_cn": "AK-47 | 酷炫涂鸦皮革",
+      "market_hash_name": "AK-47 | Jet Set (Battle-Scarred)"
+    },
+    "33925": {
+      "goods_id": "33925",
+      "name_cn": "AK-47 | 酷炫涂鸦皮革 (崭新出厂)",
+      "name_cn_base": "AK-47 | 酷炫涂鸦皮革",
+      "wear_cn": "崭新出厂",
+      "short_name_cn": "AK-47 | 酷炫涂鸦皮革",
+      "market_hash_name": "AK-47 | Jet Set (Factory New)"
+    },
+    "33926": {
+      "goods_id": "33926",
+      "name_cn": "AK-47 | 酷炫涂鸦皮革 (久经沙场)",
+      "name_cn_base": "AK-47 | 酷炫涂鸦皮革",
+      "wear_cn": "久经沙场",
+      "short_name_cn": "AK-47 | 酷炫涂鸦皮革",
+      "market_hash_name": "AK-47 | Jet Set (Field-Tested)"
+    },
+    "33927": {
+      "goods_id": "33927",
+      "name_cn": "AK-47 | 酷炫涂鸦皮革 (略有磨损)",
+      "name_cn_base": "AK-47 | 酷炫涂鸦皮革",
+      "wear_cn": "略有磨损",
+      "short_name_cn": "AK-47 | 酷炫涂鸦皮革",
+      "market_hash_name": "AK-47 | Jet Set (Minimal Wear)"
+    },
+    "33930": {
+      "goods_id": "33930",
+      "name_cn": "AK-47 | 丛林涂装 (崭新出厂)",
+      "name_cn_base": "AK-47 | 丛林涂装",
+      "wear_cn": "崭新出厂",
+      "short_name_cn": "AK-47 | 丛林涂装",
+      "market_hash_name": "AK-47 | Jungle Spray (Factory New)"
+    },
+    "33931": {
+      "goods_id": "33931",
+      "name_cn": "AK-47 | 丛林涂装 (久经沙场)",
+      "name_cn_base": "AK-47 | 丛林涂装",
+      "wear_cn": "久经沙场",
+      "short_name_cn": "AK-47 | 丛林涂装",
+      "market_hash_name": "AK-47 | Jungle Spray (Field-Tested)"
+    },
+    "33932": {
+      "goods_id": "33932",
+      "name_cn": "AK-47 | 丛林涂装 (略有磨损)",
+      "name_cn_base": "AK-47 | 丛林涂装",
+      "wear_cn": "略有磨损",
+      "short_name_cn": "AK-47 | 丛林涂装",
+      "market_hash_name": "AK-47 | Jungle Spray (Minimal Wear)"
+    },
+    "33933": {
+      "goods_id": "33933",
+      "name_cn": "AK-47 | 丛林涂装 (破损不堪)",
+      "name_cn_base": "AK-47 | 丛林涂装",
+      "wear_cn": "破损不堪",
+      "short_name_cn": "AK-47 | 丛林涂装",
+      "market_hash_name": "AK-47 | Jungle Spray (Well-Worn)"
+    }
+  },
+  "market_hash_to_cn": {
+    "Sticker | Mahjong Zhong": "印花 | 麻将·百中",
+    "Sticker | Non-Veg": "印花 | 肉食主义",
+    "M4A4 | Evil Daimyo (Field-Tested)": "M4A4 | 杀意大名 (久经沙场)",
+    "Chroma Case": "幻彩武器箱",
+    "Tec-9 | Ice Cap (Factory New)": "Tec-9 | 冰冠 (崭新出厂)",
+    "MAC-10 | Lapis Gator (Minimal Wear)": "MAC-10 | 青金鳄皮 (略有磨损)",
+    "AUG | Condemned (Field-Tested)": "AUG | 众枪之的 (久经沙场)",
+    "Chroma 3 Case": "幻彩 3 号武器箱",
+    "CZ75-Auto | Polymer (Field-Tested)": "CZ75自动型 | 聚合物 (久经沙场)",
+    "MP9 | Bioleak (Factory New)": "MP9 | 生化泄漏 (崭新出厂)",
+    "MAC-10 | Silver (Factory New)": "MAC-10 | 银质 (崭新出厂)",
+    "Falchion Case": "弯曲猎手武器箱",
+    "Sticker | Gambit Esports | Boston 2018": "印花 | Gambit Esports | 2018年波士顿锦标赛",
+    "Five-SeveN | Orange Peel (Minimal Wear)": "FN57 | 橘皮涂装 (略有磨损)",
+    "Desert Eagle | Mudder (Field-Tested)": "沙漠之鹰 | 泥地杀手 (久经沙场)",
+    "Desert Eagle | Mudder (Minimal Wear)": "沙漠之鹰 | 泥地杀手 (略有磨损)",
+    "P2000 | Turf (Field-Tested)": "P2000 | 草皮 (久经沙场)",
+    "Desert Eagle | Oxide Blaze (Factory New)": "沙漠之鹰 | 锈蚀烈焰 (崭新出厂)",
+    "Desert Eagle | Urban Rubble (Field-Tested)": "沙漠之鹰 | 都市瓦砾 (久经沙场)",
+    "MP7 | Urban Hazard (Factory New)": "MP7 | 都市危机 (崭新出厂)",
+    "Five-SeveN | Violent Daimyo (Factory New)": "FN57 | 霸意大名 (崭新出厂)",
+    "AK-47 | Bloodsport (Factory New)": "AK-47 | 血腥运动 (崭新出厂)",
+    "AK-47 | Bloodsport (Field-Tested)": "AK-47 | 血腥运动 (久经沙场)",
+    "AK-47 | Bloodsport (Well-Worn)": "AK-47 | 血腥运动 (破损不堪)",
+    "AK-47 | Blue Laminate (Factory New)": "AK-47 | 蓝色层压板 (崭新出厂)",
+    "AK-47 | Blue Laminate (Field-Tested)": "AK-47 | 蓝色层压板 (久经沙场)",
+    "AK-47 | Cartel (Minimal Wear)": "AK-47 | 卡特尔 (略有磨损)",
+    "AK-47 | Cartel (Well-Worn)": "AK-47 | 卡特尔 (破损不堪)",
+    "AK-47 | Case Hardened (Battle-Scarred)": "AK-47 | 表面淬火 (战痕累累)",
+    "AK-47 | Case Hardened (Factory New)": "AK-47 | 表面淬火 (崭新出厂)",
+    "AK-47 | Case Hardened (Field-Tested)": "AK-47 | 表面淬火 (久经沙场)",
+    "AK-47 | Elite Build (Minimal Wear)": "AK-47 | 精英之作 (略有磨损)",
+    "AK-47 | Elite Build (Well-Worn)": "AK-47 | 精英之作 (破损不堪)",
+    "AK-47 | Emerald Pinstripe (Battle-Scarred)": "AK-47 | 翡翠细条纹 (战痕累累)",
+    "AK-47 | Emerald Pinstripe (Factory New)": "AK-47 | 翡翠细条纹 (崭新出厂)",
+    "AK-47 | Emerald Pinstripe (Field-Tested)": "AK-47 | 翡翠细条纹 (久经沙场)",
+    "AK-47 | Emerald Pinstripe (Minimal Wear)": "AK-47 | 翡翠细条纹 (略有磨损)",
+    "AK-47 | Fire Serpent (Battle-Scarred)": "AK-47 | 火蛇 (战痕累累)",
+    "AK-47 | Fire Serpent (Factory New)": "AK-47 | 火蛇 (崭新出厂)",
+    "AK-47 | Fire Serpent (Minimal Wear)": "AK-47 | 火蛇 (略有磨损)",
+    "AK-47 | Fire Serpent (Well-Worn)": "AK-47 | 火蛇 (破损不堪)",
+    "AK-47 | First Class (Battle-Scarred)": "AK-47 | 至高皮革 (战痕累累)",
+    "AK-47 | First Class (Factory New)": "AK-47 | 至高皮革 (崭新出厂)",
+    "AK-47 | First Class (Field-Tested)": "AK-47 | 至高皮革 (久经沙场)",
+    "AK-47 | First Class (Minimal Wear)": "AK-47 | 至高皮革 (略有磨损)",
+    "AK-47 | First Class (Well-Worn)": "AK-47 | 至高皮革 (破损不堪)",
+    "AK-47 | Frontside Misty (Factory New)": "AK-47 | 前线迷雾 (崭新出厂)",
+    "AK-47 | Frontside Misty (Field-Tested)": "AK-47 | 前线迷雾 (久经沙场)",
+    "AK-47 | Frontside Misty (Minimal Wear)": "AK-47 | 前线迷雾 (略有磨损)",
+    "AK-47 | Frontside Misty (Well-Worn)": "AK-47 | 前线迷雾 (破损不堪)",
+    "AK-47 | Fuel Injector (Battle-Scarred)": "AK-47 | 燃料喷射器 (战痕累累)",
+    "AK-47 | Hydroponic (Battle-Scarred)": "AK-47 | 水栽竹 (战痕累累)",
+    "AK-47 | Hydroponic (Factory New)": "AK-47 | 水栽竹 (崭新出厂)",
+    "AK-47 | Hydroponic (Minimal Wear)": "AK-47 | 水栽竹 (略有磨损)",
+    "AK-47 | Hydroponic (Well-Worn)": "AK-47 | 水栽竹 (破损不堪)",
+    "AK-47 | Jaguar (Battle-Scarred)": "AK-47 | 美洲猛虎 (战痕累累)",
+    "AK-47 | Jaguar (Factory New)": "AK-47 | 美洲猛虎 (崭新出厂)",
+    "AK-47 | Jet Set (Battle-Scarred)": "AK-47 | 酷炫涂鸦皮革 (战痕累累)",
+    "AK-47 | Jet Set (Factory New)": "AK-47 | 酷炫涂鸦皮革 (崭新出厂)",
+    "AK-47 | Jet Set (Field-Tested)": "AK-47 | 酷炫涂鸦皮革 (久经沙场)",
+    "AK-47 | Jet Set (Minimal Wear)": "AK-47 | 酷炫涂鸦皮革 (略有磨损)",
+    "AK-47 | Jungle Spray (Factory New)": "AK-47 | 丛林涂装 (崭新出厂)",
+    "AK-47 | Jungle Spray (Field-Tested)": "AK-47 | 丛林涂装 (久经沙场)",
+    "AK-47 | Jungle Spray (Minimal Wear)": "AK-47 | 丛林涂装 (略有磨损)",
+    "AK-47 | Jungle Spray (Well-Worn)": "AK-47 | 丛林涂装 (破损不堪)"
+  },
+  "unresolved": [
+    {
+      "goods_id": "33843",
+      "status": 200,
+      "code": "Request rate limited",
+      "msg": null
+    },
+    {
+      "goods_id": "33844",
+      "status": 200,
+      "code": "Request rate limited",
+      "msg": null
+    },
+    {
+      "goods_id": "33851",
+      "status": 200,
+      "code": "Request rate limited",
+      "msg": null
+    },
+    {
+      "goods_id": "33852",
+      "status": 200,
+      "code": "Request rate limited",
+      "msg": null
+    },
+    {
+      "goods_id": "33853",
+      "status": 200,
+      "code": "Request rate limited",
+      "msg": null
+    },
+    {
+      "goods_id": "33858",
+      "status": 200,
+      "code": "Request rate limited",
+      "msg": null
+    },
+    {
+      "goods_id": "33859",
+      "status": 200,
+      "code": "Request rate limited",
+      "msg": null
+    },
+    {
+      "goods_id": "33860",
+      "status": 200,
+      "code": "Request rate limited",
+      "msg": null
+    },
+    {
+      "goods_id": "33861",
+      "status": 200,
+      "code": "Request rate limited",
+      "msg": null
+    },
+    {
+      "goods_id": "33862",
+      "status": 200,
+      "code": "Request rate limited",
+      "msg": null
+    },
+    {
+      "goods_id": "33863",
+      "status": 200,
+      "code": "Request rate limited",
+      "msg": null
+    },
+    {
+      "goods_id": "33864",
+      "status": 200,
+      "code": "Request rate limited",
+      "msg": null
+    },
+    {
+      "goods_id": "33865",
+      "status": 200,
+      "code": "Request rate limited",
+      "msg": null
+    },
+    {
+      "goods_id": "33867",
+      "status": 200,
+      "code": "Request rate limited",
+      "msg": null
+    },
+    {
+      "goods_id": "33877",
+      "status": 429,
+      "code": "System Error",
+      "msg": null
+    },
+    {
+      "goods_id": "33916",
+      "status": 429,
+      "code": "System Error",
+      "msg": null
+    },
+    {
+      "goods_id": "33935",
+      "status": 200,
+      "code": "Request rate limited",
+      "msg": null
+    },
+    {
+      "goods_id": "33936",
+      "status": 200,
+      "code": "Request rate limited",
+      "msg": null
+    },
+    {
+      "goods_id": "33938",
+      "status": 200,
+      "code": "Request rate limited",
+      "msg": null
+    },
+    {
+      "goods_id": "33939",
+      "status": 200,
+      "code": "Request rate limited",
+      "msg": null
+    },
+    {
+      "goods_id": "33940",
+      "status": 200,
+      "code": "Request rate limited",
+      "msg": null
+    },
+    {
+      "goods_id": "33941",
+      "status": 200,
+      "code": "Request rate limited",
+      "msg": null
+    },
+    {
+      "goods_id": "33942",
+      "status": 200,
+      "code": "Request rate limited",
+      "msg": null
+    },
+    {
+      "goods_id": "33943",
+      "status": 200,
+      "code": "Request rate limited",
+      "msg": null
+    },
+    {
+      "goods_id": "33948",
+      "status": 200,
+      "code": "Request rate limited",
+      "msg": null
+    },
+    {
+      "goods_id": "33949",
+      "status": 200,
+      "code": "Request rate limited",
+      "msg": null
+    },
+    {
+      "goods_id": "33950",
+      "status": 200,
+      "code": "Request rate limited",
+      "msg": null
+    },
+    {
+      "goods_id": "33953",
+      "status": 200,
+      "code": "Request rate limited",
+      "msg": null
+    },
+    {
+      "goods_id": "33954",
+      "status": 429,
+      "code": "System Error",
+      "msg": null
+    },
+    {
+      "goods_id": "33955",
+      "status": 200,
+      "code": "Request rate limited",
+      "msg": null
+    },
+    {
+      "goods_id": "33956",
+      "status": 429,
+      "code": "System Error",
+      "msg": null
+    },
+    {
+      "goods_id": "33957",
+      "status": 200,
+      "code": "Request rate limited",
+      "msg": null
+    },
+    {
+      "goods_id": "33958",
+      "status": 429,
+      "code": "System Error",
+      "msg": null
+    },
+    {
+      "goods_id": "33961",
+      "status": 200,
+      "code": "Request rate limited",
+      "msg": null
+    },
+    {
+      "goods_id": "33963",
+      "status": 200,
+      "code": "Request rate limited",
+      "msg": null
+    },
+    {
+      "goods_id": "33965",
+      "status": 200,
+      "code": "Request rate limited",
+      "msg": null
+    },
+    {
+      "goods_id": "33966",
+      "status": 200,
+      "code": "Request rate limited",
+      "msg": null
+    },
+    {
+      "goods_id": "33967",
+      "status": 200,
+      "code": "Request rate limited",
+      "msg": null
+    },
+    {
+      "goods_id": "33968",
+      "status": 200,
+      "code": "Request rate limited",
+      "msg": null
+    },
+    {
+      "goods_id": "33969",
+      "status": 200,
+      "code": "Request rate limited",
+      "msg": null
+    },
+    {
+      "goods_id": "33970",
+      "status": 200,
+      "code": "Request rate limited",
+      "msg": null
+    },
+    {
+      "goods_id": "33973",
+      "status": 200,
+      "code": "Request rate limited",
+      "msg": null
+    },
+    {
+      "goods_id": "33975",
+      "status": 200,
+      "code": "Request rate limited",
+      "msg": null
+    },
+    {
+      "goods_id": "33976",
+      "status": 200,
+      "code": "Request rate limited",
+      "msg": null
+    },
+    {
+      "goods_id": "33977",
+      "status": 200,
+      "code": "Request rate limited",
+      "msg": null
+    },
+    {
+      "goods_id": "33979",
+      "status": 200,
+      "code": "Request rate limited",
+      "msg": null
+    },
+    {
+      "goods_id": "33980",
+      "status": 200,
+      "code": "Request rate limited",
+      "msg": null
+    },
+    {
+      "goods_id": "33981",
+      "status": 200,
+      "code": "Request rate limited",
+      "msg": null
+    },
+    {
+      "goods_id": "33982",
+      "status": 200,
+      "code": "Request rate limited",
+      "msg": null
+    },
+    {
+      "goods_id": "33983",
+      "status": 200,
+      "code": "Request rate limited",
+      "msg": null
+    },
+    {
+      "goods_id": "33984",
+      "status": 200,
+      "code": "Request rate limited",
+      "msg": null
+    },
+    {
+      "goods_id": "33985",
+      "status": 200,
+      "code": "Request rate limited",
+      "msg": null
+    },
+    {
+      "goods_id": "33986",
+      "status": 200,
+      "code": "Request rate limited",
+      "msg": null
+    },
+    {
+      "goods_id": "33987",
+      "status": 200,
+      "code": "Request rate limited",
+      "msg": null
+    },
+    {
+      "goods_id": "33988",
+      "status": 200,
+      "code": "Request rate limited",
+      "msg": null
+    }
+  ]
+}

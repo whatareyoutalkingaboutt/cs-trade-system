@@ -1,0 +1,87 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-sans: "Avenir Next", "Segoe UI", "Helvetica Neue", sans-serif;
+  --font-display: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+  --bg-deep: #0b1120;
+  --bg-ink: #0f172a;
+  --bg-ember: #1f1106;
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5f5;
+  --text-muted: #94a3b8;
+  --card: rgba(15, 23, 42, 0.72);
+  --card-border: rgba(148, 163, 184, 0.18);
+  --glow: radial-gradient(circle at top, rgba(79, 150, 255, 0.32), transparent 45%);
+  --ember: radial-gradient(circle at 90% 20%, rgba(255, 154, 31, 0.25), transparent 50%);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  color: var(--text-primary);
+  background: linear-gradient(160deg, var(--bg-deep), #111c33 50%, var(--bg-ember));
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: var(--glow), var(--ember);
+  pointer-events: none;
+  z-index: -1;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: radial-gradient(rgba(148, 163, 184, 0.08) 1px, transparent 1px);
+  background-size: 30px 30px;
+  opacity: 0.25;
+  pointer-events: none;
+  z-index: -1;
+}
+
+@layer components {
+  .glass {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    backdrop-filter: blur(18px);
+  }
+
+  .panel-title {
+    @apply text-sm uppercase tracking-[0.35em] text-slate-300;
+  }
+
+  .metric {
+    @apply text-3xl font-semibold text-white;
+  }
+}
+
+@layer utilities {
+  .text-glow {
+    text-shadow: 0 0 18px rgba(79, 150, 255, 0.35);
+  }
+
+  .text-ember {
+    text-shadow: 0 0 18px rgba(255, 154, 31, 0.35);
+  }
+
+  .animate-stagger > * {
+    animation: fadeUp 0.6s ease-out;
+    animation-fill-mode: both;
+  }
+
+  .animate-stagger > *:nth-child(1) { animation-delay: 0.05s; }
+  .animate-stagger > *:nth-child(2) { animation-delay: 0.12s; }
+  .animate-stagger > *:nth-child(3) { animation-delay: 0.2s; }
+  .animate-stagger > *:nth-child(4) { animation-delay: 0.28s; }
+  .animate-stagger > *:nth-child(5) { animation-delay: 0.36s; }
+}
