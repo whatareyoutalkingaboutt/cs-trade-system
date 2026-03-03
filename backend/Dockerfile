@@ -8,6 +8,7 @@ ENV PYTHONPATH=/app
 WORKDIR /app
 
 COPY backend/requirements.runtime.txt /tmp/requirements.runtime.txt
-RUN pip install --upgrade pip && pip install -r /tmp/requirements.runtime.txt
+RUN pip install --upgrade pip -i https://pypi.tuna.tsinghua.edu.cn/simple --trusted-host pypi.tuna.tsinghua.edu.cn \
+    && pip install -r /tmp/requirements.runtime.txt -i https://pypi.tuna.tsinghua.edu.cn/simple --trusted-host pypi.tuna.tsinghua.edu.cn
 
 COPY . /app

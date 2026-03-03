@@ -4,6 +4,7 @@ WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED=1
 
 COPY frontend/package*.json ./
+RUN npm config set registry https://registry.npmmirror.com
 RUN npm ci
 
 COPY frontend/ ./
