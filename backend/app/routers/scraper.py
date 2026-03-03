@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from datetime import datetime, timezone
 from typing import Optional
 
@@ -15,6 +16,18 @@ from backend.models import PlatformConfig, ScraperTask, TaskExecution, User
 
 
 router = APIRouter(tags=["scraper"])
+LEGACY_MULTI_PLATFORM_TASK_SUFFIXES = (
+    "scrape_items_by_priority",
+    "scrape_all_platforms",
+    "scrape_steam_price",
+    "scrape_buff_price",
+    "scrape_youpin_price",
+)
+
+
+def _legacy_multi_platform_enabled() -> bool:
+    raw = os.getenv("ENABLE_LEGACY_MULTI_PLATFORM_SCRAPE", "false").strip().lower()
+    return raw in {"1", "true", "yes", "on"}
 
 
 class ScraperTaskRunRequest(BaseModel):
@@ -158,6 +171,14 @@ def run_scraper_task(task_id: int, payload: ScraperTaskRunRequest, _: User = Dep
             "verify_and_alert_task": "backend.scrapers.celery_tasks.verify_and_alert_task",
         }
         celery_task = task_map.get(task.task_type, task.task_type)
+        if (
+            not _legacy_multi_platform_enabled()
+            and any(celery_task.endswith(suffix) for suffix in LEGACY_MULTI_PLATFORM_TASK_SUFFIXES)
+        ):
+            raise HTTPException(
+                status_code=409,
+                detail="Legacy multi-platform scraping is disabled; system is running in CSQAQ-only mode",
+            )
         args = []
         kwargs = {}
 

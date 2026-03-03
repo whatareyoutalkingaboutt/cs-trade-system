@@ -14,6 +14,14 @@ import os
 from datetime import timedelta
 from celery.schedules import crontab
 
+
+def _env_flag(name: str, default: bool = False) -> bool:
+    raw = os.getenv(name, "true" if default else "false").strip().lower()
+    return raw in {"1", "true", "yes", "on"}
+
+
+ENABLE_LEGACY_MULTI_PLATFORM_SCRAPE = _env_flag("ENABLE_LEGACY_MULTI_PLATFORM_SCRAPE", default=False)
+
 # ==================== 基础配置 ====================
 
 # 时区设置
@@ -71,39 +79,6 @@ worker_task_log_format = '[%(asctime)s: %(levelname)s/%(processName)s][%(task_na
 # ==================== 定时任务配置 (Celery Beat) ====================
 
 beat_schedule = {
-    # 高优先级饰品采集(每5分钟)
-    'scrape-high-priority-items': {
-        'task': 'backend.scrapers.celery_tasks.scrape_items_by_priority',
-        'schedule': timedelta(minutes=5),
-        'args': ('high',),  # 优先级: high (8-10)
-        'options': {
-            'queue': 'default',
-            'expires': 60,  # 任务60秒后过期
-        }
-    },
-
-    # 中优先级饰品采集(每30分钟)
-    'scrape-medium-priority-items': {
-        'task': 'backend.scrapers.celery_tasks.scrape_items_by_priority',
-        'schedule': timedelta(minutes=30),
-        'args': ('medium',),  # 优先级: medium (5-7)
-        'options': {
-            'queue': 'default',
-            'expires': 300,
-        }
-    },
-
-    # 低优先级饰品采集(每2小时)
-    'scrape-low-priority-items': {
-        'task': 'backend.scrapers.celery_tasks.scrape_items_by_priority',
-        'schedule': timedelta(hours=2),
-        'args': ('low',),  # 优先级: low (1-4)
-        'options': {
-            'queue': 'default',
-            'expires': 600,
-        }
-    },
-
     # 心跳检测(每1分钟)
     'system-heartbeat': {
         'task': 'backend.scrapers.celery_tasks.write_heartbeat',
@@ -195,6 +170,42 @@ beat_schedule = {
         }
     },
 }
+
+if ENABLE_LEGACY_MULTI_PLATFORM_SCRAPE:
+    beat_schedule.update(
+        {
+            # 高优先级饰品采集(每5分钟)
+            'scrape-high-priority-items': {
+                'task': 'backend.scrapers.celery_tasks.scrape_items_by_priority',
+                'schedule': timedelta(minutes=5),
+                'args': ('high',),  # 优先级: high (8-10)
+                'options': {
+                    'queue': 'default',
+                    'expires': 60,  # 任务60秒后过期
+                }
+            },
+            # 中优先级饰品采集(每30分钟)
+            'scrape-medium-priority-items': {
+                'task': 'backend.scrapers.celery_tasks.scrape_items_by_priority',
+                'schedule': timedelta(minutes=30),
+                'args': ('medium',),  # 优先级: medium (5-7)
+                'options': {
+                    'queue': 'default',
+                    'expires': 300,
+                }
+            },
+            # 低优先级饰品采集(每2小时)
+            'scrape-low-priority-items': {
+                'task': 'backend.scrapers.celery_tasks.scrape_items_by_priority',
+                'schedule': timedelta(hours=2),
+                'args': ('low',),  # 优先级: low (1-4)
+                'options': {
+                    'queue': 'default',
+                    'expires': 600,
+                }
+            },
+        }
+    )
 
 # ==================== 队列配置 ====================
 

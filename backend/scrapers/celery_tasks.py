@@ -111,6 +111,11 @@ def _to_int(value: Any, default: int) -> int:
         return int(default)
 
 
+def _legacy_multi_platform_enabled() -> bool:
+    raw = os.getenv("ENABLE_LEGACY_MULTI_PLATFORM_SCRAPE", "false").strip().lower()
+    return raw in {"1", "true", "yes", "on"}
+
+
 def _compute_verify_candidate_score(candidate: Dict[str, Any]) -> float:
     profit_rate = _to_float(candidate.get("profit_rate"))
     net_profit = _to_float(candidate.get("net_profit"))
@@ -315,6 +320,9 @@ def scrape_steam_price(self, item_name: str, use_proxy: bool = True) -> Optional
         - 失败后60秒重试
     """
     logger.info(f"[Task] 开始采集Steam价格: {item_name}")
+    if not _legacy_multi_platform_enabled():
+        logger.info("[Task] 跳过 Steam 采集：ENABLE_LEGACY_MULTI_PLATFORM_SCRAPE=false")
+        return None
 
     try:
         with SteamMarketScraper(use_proxy=use_proxy) as scraper:
@@ -369,6 +377,9 @@ def scrape_buff_price(self, item_name: str) -> Optional[Dict[str, Any]]:
         价格数据字典或None
     """
     logger.info(f"[Task] 开始采集Buff价格: {item_name}")
+    if not _legacy_multi_platform_enabled():
+        logger.info("[Task] 跳过 Buff 采集：ENABLE_LEGACY_MULTI_PLATFORM_SCRAPE=false")
+        return None
 
     try:
         with BuffScraper() as scraper:
@@ -420,6 +431,9 @@ def scrape_youpin_price(self, item_name: str) -> Optional[Dict[str, Any]]:
         价格数据字典或None
     """
     logger.info(f"[Task] 开始采集Youpin价格: {item_name}")
+    if not _legacy_multi_platform_enabled():
+        logger.info("[Task] 跳过 Youpin 采集：ENABLE_LEGACY_MULTI_PLATFORM_SCRAPE=false")
+        return None
 
     try:
         youpin_payload, data_source = _fetch_youpin_with_fallback(item_name)
@@ -471,6 +485,16 @@ def scrape_all_platforms(item_name: str) -> Dict[str, Any]:
         }
     """
     logger.info(f"[Task] 开始采集所有平台价格: {item_name}")
+    if not _legacy_multi_platform_enabled():
+        return {
+            "item_name": item_name,
+            "steam": None,
+            "buff": None,
+            "youpin": None,
+            "timestamp": datetime.now().isoformat(),
+            "status": "skipped",
+            "reason": "legacy_multi_platform_scrape_disabled",
+        }
 
     result = {
         'item_name': item_name,
@@ -579,6 +603,16 @@ def scrape_items_by_priority(priority: str) -> Dict[str, Any]:
         }
     """
     logger.info(f"[Task] 开始按优先级采集: {priority}")
+    if not _legacy_multi_platform_enabled():
+        return {
+            "priority": priority,
+            "total_items": 0,
+            "success_count": 0,
+            "failed_count": 0,
+            "timestamp": datetime.now().isoformat(),
+            "status": "skipped",
+            "reason": "legacy_multi_platform_scrape_disabled",
+        }
 
     item_names = get_items_by_priority(priority)
 
