@@ -7,6 +7,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
 
 from backend.app.dependencies import get_current_user
+from backend.core.cache import get_json
 from backend.core.database import get_sessionmaker
 from backend.models import Item, User
 from backend.services.base_sync_service import sync_base_items
@@ -189,6 +190,23 @@ def sync_items_base(
 ) -> dict:
     result = sync_base_items(page_size=page_size, max_pages=max_pages)
     return {"success": True, "data": result}
+
+
+@router.get("/api/items/rankings")
+def get_item_rankings() -> dict:
+    """
+    获取 24H 热门饰品排行（涨幅榜与活跃榜）。
+    数据由 Celery 定时计算并写入缓存，这里仅做缓存直出。
+    """
+    gainers = get_json("rankings:top_gainers") or []
+    volume = get_json("rankings:top_volume") or []
+    meta = get_json("rankings:meta") or {}
+    return {
+        "success": True,
+        "top_gainers": gainers,
+        "top_volume": volume,
+        "meta": meta,
+    }
 
 
 @router.get("/api/items/{item_id}")

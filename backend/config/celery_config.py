@@ -162,6 +162,16 @@ beat_schedule = {
         }
     },
 
+    # 热门饰品榜单计算（每15分钟）
+    'calculate-daily-rankings': {
+        'task': 'backend.scrapers.celery_tasks.calculate_daily_rankings',
+        'schedule': timedelta(minutes=15),
+        'options': {
+            'queue': 'default',
+            'expires': 300,
+        }
+    },
+
     # 高优复核候选队列消费(每秒)
     'dispatch-high-priority-verify-queue': {
         'task': 'backend.scrapers.celery_tasks.dispatch_high_priority_verify_queue',

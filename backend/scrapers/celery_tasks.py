@@ -30,6 +30,7 @@ from backend.core.cache import (
     get_high_priority_verify_queue_size,
     pop_high_priority_verify_candidates,
     release_lock,
+    set_json,
 )
 from backend.core.database import get_sessionmaker
 from backend.models import Item
@@ -101,6 +102,13 @@ def _to_float(value: Any, default: float = 0.0) -> float:
         return float(value)
     except (TypeError, ValueError):
         return float(default)
+
+
+def _to_int(value: Any, default: int) -> int:
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return int(default)
 
 
 def _compute_verify_candidate_score(candidate: Dict[str, Any]) -> float:
@@ -188,6 +196,99 @@ def _dispatch_high_priority_verify_queue(max_dispatch: int = 1) -> Dict[str, int
         "requeued": requeued,
         "pending": pending,
     }
+
+
+@celery_app.task(name='backend.scrapers.celery_tasks.calculate_daily_rankings')
+def calculate_daily_rankings() -> Dict[str, Any]:
+    """
+    计算热门饰品榜单（24H涨幅榜、24H活跃榜）并写入缓存。
+
+    默认读取 buff 平台，可通过 HOT_RANKINGS_PLATFORM 覆盖。
+    """
+    ranking_limit = max(1, _to_int(os.getenv("HOT_RANKINGS_LIMIT"), 50))
+    ranking_ttl = max(60, _to_int(os.getenv("HOT_RANKINGS_CACHE_TTL_SECONDS"), 900))
+    ranking_platform = (os.getenv("HOT_RANKINGS_PLATFORM", "buff") or "").strip().lower()
+
+    session = get_sessionmaker()()
+    try:
+        rows = session.execute(
+            text(
+                """
+                WITH stats AS (
+                    SELECT
+                        p.item_id,
+                        first(p.price, p.time) AS old_price,
+                        last(p.price, p.time) AS current_price,
+                        last(COALESCE(p.volume, 0), p.time) AS current_volume
+                    FROM price_history p
+                    WHERE p.time >= NOW() - INTERVAL '24 hours'
+                      AND p.price > 0
+                      AND (:platform = '' OR p.platform = :platform)
+                    GROUP BY p.item_id
+                )
+                SELECT
+                    i.id,
+                    i.market_hash_name,
+                    i.image_url,
+                    s.current_price,
+                    s.current_volume,
+                    ((s.current_price - s.old_price) / s.old_price * 100) AS price_change_pct
+                FROM stats s
+                JOIN items i ON s.item_id = i.id
+                WHERE i.is_active = TRUE
+                  AND s.old_price > 0
+                  AND s.current_price > 0
+                """
+            ),
+            {"platform": ranking_platform},
+        ).fetchall()
+
+        items_data = [
+            {
+                "id": int(row.id),
+                "market_hash_name": row.market_hash_name,
+                "image_url": row.image_url,
+                "price": _to_float(row.current_price, 0.0),
+                "volume": _to_int(row.current_volume, 0),
+                "change_pct": _to_float(row.price_change_pct, 0.0),
+            }
+            for row in rows
+        ]
+
+        top_gainers = sorted(items_data, key=lambda item: item["change_pct"], reverse=True)[:ranking_limit]
+        top_volume = sorted(items_data, key=lambda item: item["volume"], reverse=True)[:ranking_limit]
+
+        set_json("rankings:top_gainers", top_gainers, ttl=ranking_ttl)
+        set_json("rankings:top_volume", top_volume, ttl=ranking_ttl)
+        set_json(
+            "rankings:meta",
+            {
+                "generated_at": datetime.now(timezone.utc).isoformat(),
+                "platform": ranking_platform,
+                "limit": ranking_limit,
+                "ttl_seconds": ranking_ttl,
+            },
+            ttl=ranking_ttl,
+        )
+
+        logger.info(
+            "[Task] 热门榜刷新完成: platform={}, gainers={}, volume={}",
+            ranking_platform or "all",
+            len(top_gainers),
+            len(top_volume),
+        )
+        return {
+            "status": "ok",
+            "platform": ranking_platform,
+            "top_gainers": len(top_gainers),
+            "top_volume": len(top_volume),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+        }
+    except Exception as exc:
+        logger.exception("[Task] 热门榜刷新失败: {}", exc)
+        raise
+    finally:
+        session.close()
 
 
 # ==================== 单平台采集任务 ====================

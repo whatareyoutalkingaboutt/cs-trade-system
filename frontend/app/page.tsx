@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { ItemTable } from "@/components/item-table";
+import { TopRankings } from "@/components/top-rankings";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -137,31 +138,34 @@ export default function HomePage() {
       </header>
 
       <main className="mx-auto mt-10 w-full max-w-7xl">
-        <Card className="shadow-glow">
-          <CardContent className="pt-6">
-            {loading ? (
-              <p className="text-sm text-slate-400">正在加载价格数据...</p>
-            ) : error ? (
-              <p className="text-sm text-red-300">{error}</p>
-            ) : (
-              <ItemTable
-                data={displayRows}
-                onSelect={(row) => {
-                  const params = new URLSearchParams({
-                    marketHashName: row.name,
-                    displayName: row.displayName || row.name,
-                  });
-                  router.push(`/trends?${params.toString()}`);
-                }}
-                searchValue={searchQuery}
-                onSearchChange={setSearchQuery}
-                searchLoading={searchBusy}
-                searchSource={searchSource}
-                searchError={searchError}
-              />
-            )}
-          </CardContent>
-        </Card>
+        <div className="grid gap-6 lg:grid-cols-3">
+          <Card className="shadow-glow lg:col-span-2">
+            <CardContent className="pt-6">
+              {loading ? (
+                <p className="text-sm text-slate-400">正在加载价格数据...</p>
+              ) : error ? (
+                <p className="text-sm text-red-300">{error}</p>
+              ) : (
+                <ItemTable
+                  data={displayRows}
+                  onSelect={(row) => {
+                    const params = new URLSearchParams({
+                      marketHashName: row.name,
+                      displayName: row.displayName || row.name,
+                    });
+                    router.push(`/trends?${params.toString()}`);
+                  }}
+                  searchValue={searchQuery}
+                  onSearchChange={setSearchQuery}
+                  searchLoading={searchBusy}
+                  searchSource={searchSource}
+                  searchError={searchError}
+                />
+              )}
+            </CardContent>
+          </Card>
+          <TopRankings />
+        </div>
       </main>
     </div>
   );
