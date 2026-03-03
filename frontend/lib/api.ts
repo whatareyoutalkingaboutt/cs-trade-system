@@ -9,6 +9,8 @@ function resolveApiBase(): string {
   return `${window.location.protocol}//${window.location.host}`;
 }
 
+export const API_BASE = resolveApiBase();
+
 const AUTH_REFRESH_PATH = "/api/auth/refresh";
 let refreshingTokenPromise: Promise<string | null> | null = null;
 
