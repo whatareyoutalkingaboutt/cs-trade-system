@@ -38,7 +38,7 @@ const fetcher = async (url: string): Promise<RankingResponse> => {
 
 export function TopRankings() {
   const [tab, setTab] = useState<"gainers" | "volume">("gainers");
-  const { data, error, isLoading } = useSWR<RankingResponse>(`${API_BASE}/api/items/rankings`, fetcher, {
+  const { data, error, isLoading } = useSWR<RankingResponse>(`${API_BASE}/api/items/rankings?source=auto`, fetcher, {
     refreshInterval: 60_000,
     revalidateOnFocus: false,
   });

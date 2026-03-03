@@ -226,7 +226,7 @@ def sync_items_base(
 @router.get("/api/items/rankings")
 def get_item_rankings(
     limit: int = Query(default=50, ge=1, le=200),
-    source: str = Query(default="direct"),
+    source: str = Query(default="auto"),
 ) -> dict:
     """
     获取热门饰品排行。
@@ -237,6 +237,29 @@ def get_item_rankings(
     source_mode = (source or "direct").strip().lower()
     if source_mode not in {"direct", "cache", "auto"}:
         raise HTTPException(status_code=400, detail="source must be direct/cache/auto")
+
+    def _cache_payload() -> dict:
+        gainers = get_json("rankings:top_gainers") or []
+        volume = get_json("rankings:top_volume") or []
+        meta = get_json("rankings:meta") or {}
+        gainers_limited = gainers[:limit]
+        volume_limited = volume[:limit]
+        return {
+            "success": True,
+            "source": "cache",
+            "hot_rankings": volume_limited,
+            "top_gainers": gainers_limited,
+            "top_volume": volume_limited,
+            "meta": meta,
+        }
+
+    if source_mode == "cache":
+        return _cache_payload()
+
+    if source_mode == "auto":
+        cached = _cache_payload()
+        if cached["hot_rankings"]:
+            return cached
 
     if source_mode in {"direct", "auto"}:
         try:
@@ -267,20 +290,9 @@ def get_item_rankings(
         except Exception as exc:
             if source_mode == "direct":
                 raise HTTPException(status_code=502, detail=f"CSQAQ popular goods request failed: {exc}") from exc
+            return _cache_payload()
 
-    gainers = get_json("rankings:top_gainers") or []
-    volume = get_json("rankings:top_volume") or []
-    meta = get_json("rankings:meta") or {}
-    gainers = gainers[:limit]
-    volume = volume[:limit]
-    return {
-        "success": True,
-        "source": "cache",
-        "hot_rankings": volume,
-        "top_gainers": gainers,
-        "top_volume": volume,
-        "meta": meta,
-    }
+    return _cache_payload()
 
 
 @router.get("/api/items/{item_id}")
