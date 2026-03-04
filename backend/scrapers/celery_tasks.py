@@ -1314,7 +1314,7 @@ def monitor_market_maker_behavior_task() -> Dict[str, Any]:
 
     min_price = _to_float(os.getenv("WHALE_MONITOR_MIN_PRICE"), 500.0)
     max_scan_items = max(1, _to_int(os.getenv("WHALE_MONITOR_MAX_ITEMS"), 200))
-    max_push = max(1, _to_int(os.getenv("WHALE_ALERT_MAX_PER_RUN"), 10))
+    max_push = max(1, _to_int(os.getenv("WHALE_ALERT_MAX_PER_RUN"), 20))
     min_severity = (os.getenv("WHALE_ALERT_MIN_SEVERITY", "medium") or "medium").strip().lower()
 
     tag_result = detect_market_maker_behavior()

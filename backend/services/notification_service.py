@@ -18,6 +18,7 @@ DEFAULT_NOTIFICATION_CHANNEL = "notifications:arbitrage"
 DEFAULT_TIERED_NOTIFICATION_CHANNEL = "notifications:tiered_alerts"
 DEFAULT_NOTIFY_MIN_PROFIT_RATE = float(os.getenv("ARBITRAGE_NOTIFY_MIN_PROFIT_RATE", "8.0"))
 DEFAULT_NOTIFY_MAX_ITEMS = int(os.getenv("ARBITRAGE_NOTIFY_MAX_ITEMS", "5"))
+DEFAULT_TIERED_NOTIFY_MAX_ITEMS = int(os.getenv("TIERED_NOTIFY_MAX_ITEMS", "20"))
 DEFAULT_WEBHOOK_TIMEOUT_SECONDS = int(os.getenv("NOTIFY_WEBHOOK_TIMEOUT_SECONDS", "8"))
 PLATFORM_LABELS = {
     "buff": "BUFF",
@@ -32,11 +33,45 @@ SEVERITY_RANK = {
     "low": 1,
     "info": 0,
 }
+SEVERITY_LABELS = {
+    "critical": "严重",
+    "high": "高",
+    "medium": "中",
+    "low": "低",
+    "info": "提示",
+}
+EVENT_TYPE_LABELS = {
+    "tiered_alerts": "分级预警",
+    "market_maker_alerts": "庄家行为预警",
+    "arbitrage_alerts": "套利预警",
+}
+ALERT_TYPE_LABELS = {
+    "distribution_risk": "派发风险",
+    "washout_phase": "洗盘阶段",
+    "markup_phase": "主升阶段",
+    "accumulation_phase": "吸筹阶段",
+    "market_maker_tag": "庄家标签",
+}
 
 
 def _platform_label(platform: Any) -> str:
     raw = str(platform or "").strip().lower()
     return PLATFORM_LABELS.get(raw, str(platform or "-"))
+
+
+def _event_type_label(event_type: Any) -> str:
+    key = str(event_type or "").strip().lower()
+    return EVENT_TYPE_LABELS.get(key, "分级预警")
+
+
+def _alert_type_label(alert_type: Any) -> str:
+    key = str(alert_type or "").strip().lower()
+    return ALERT_TYPE_LABELS.get(key, str(alert_type or "未知类型"))
+
+
+def _severity_label(severity: Any) -> str:
+    key = _normalize_severity(severity, default="info")
+    return SEVERITY_LABELS.get(key, "提示")
 
 
 def _item_label(row: Mapping[str, Any]) -> str:
@@ -326,7 +361,7 @@ def notify_tiered_alerts(
     *,
     event_type: str = "tiered_alerts",
     channel: str = DEFAULT_TIERED_NOTIFICATION_CHANNEL,
-    max_items: int = 10,
+    max_items: int = DEFAULT_TIERED_NOTIFY_MAX_ITEMS,
     min_severity: str = "medium",
 ) -> dict:
     rows = [dict(row) for row in alerts if isinstance(row, Mapping)]
@@ -360,23 +395,17 @@ def notify_tiered_alerts(
     sent_webhook = False
     sent_email = False
     if top_items:
-        icon_map = {
-            "critical": "🔴",
-            "high": "🟠",
-            "medium": "🟡",
-            "low": "🟢",
-            "info": "🔵",
-        }
-        lines = [f"[{event_type}] 分级预警："]
+        event_label = _event_type_label(event_type)
+        lines = [f"[{event_label}] 告警明细："]
         html_lines = [
-            f"<h3>{event_type} 分级预警</h3>",
+            f"<h3>{event_label}</h3>",
             "<table border='1' cellspacing='0' cellpadding='6'>",
             "<tr><th>等级</th><th>类型</th><th>商品</th><th>详情</th></tr>",
         ]
 
         for row in top_items:
             severity = _normalize_severity(row.get("severity"), default="info")
-            level_icon = icon_map.get(severity, "🔵")
+            severity_label = _severity_label(severity)
             item_name = str(
                 row.get("item_name")
                 or row.get("market_hash_name")
@@ -384,16 +413,16 @@ def notify_tiered_alerts(
                 or row.get("item")
                 or "-"
             )
-            alert_type = str(row.get("type") or row.get("event") or event_type)
+            alert_type = _alert_type_label(row.get("type") or row.get("event") or event_type)
             message = str(row.get("message") or row.get("detail") or "-")
-            lines.append(f"{level_icon} [{severity.upper()}] {alert_type} | {item_name} | {message}")
+            lines.append(f"[{severity_label}] {alert_type} | {item_name} | {message}")
             html_lines.append(
-                f"<tr><td>{severity.upper()}</td><td>{alert_type}</td><td>{item_name}</td><td>{message}</td></tr>"
+                f"<tr><td>{severity_label}</td><td>{alert_type}</td><td>{item_name}</td><td>{message}</td></tr>"
             )
 
         html_lines.append("</table>")
         sent_webhook = _post_webhook_text("\n".join(lines))
-        subject = f"分级预警：{event_type}（{len(top_items)}条）"
+        subject = f"{event_label}（{len(top_items)}条）"
         sent_email = send_qq_email(subject, "".join(html_lines))
 
     return {
