@@ -106,6 +106,7 @@ def _price_window_returns(
 def main() -> None:
     parser = argparse.ArgumentParser(description="Evaluate market-maker alert false positives.")
     parser.add_argument("--days", type=int, default=7, help="Lookback days for alert logs.")
+    parser.add_argument("--since", default="", help="Only evaluate alerts at/after this ISO timestamp.")
     parser.add_argument("--horizon-hours", type=int, default=24, help="Forward window for evaluation.")
     parser.add_argument("--up-threshold-pct", type=float, default=2.0, help="Long signal success threshold.")
     parser.add_argument("--down-threshold-pct", type=float, default=2.0, help="Short signal success threshold.")
@@ -117,6 +118,8 @@ def main() -> None:
 
     now = datetime.now(timezone.utc)
     cutoff = now - timedelta(days=max(1, int(args.days)))
+    since_ts = _parse_iso_ts(args.since) if str(args.since or "").strip() else None
+    effective_cutoff = max(cutoff, since_ts) if since_ts is not None else cutoff
 
     session = get_sessionmaker()()
     try:
@@ -130,7 +133,7 @@ def main() -> None:
                 ORDER BY event_time ASC
                 """
             ),
-            {"cutoff": cutoff},
+            {"cutoff": effective_cutoff},
         ).fetchall()
     finally:
         session.close()
@@ -262,6 +265,8 @@ def main() -> None:
         "generated_at": now.isoformat(),
         "inputs": {
             "days": int(args.days),
+            "since": since_ts.isoformat() if since_ts is not None else None,
+            "effective_cutoff": effective_cutoff.isoformat(),
             "horizon_hours": int(args.horizon_hours),
             "up_threshold_pct": float(args.up_threshold_pct),
             "down_threshold_pct": float(args.down_threshold_pct),
@@ -290,4 +295,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

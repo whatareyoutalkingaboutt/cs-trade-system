@@ -59,6 +59,7 @@ def _fp_brief(report: dict[str, Any]) -> dict[str, Any]:
 def main() -> None:
     parser = argparse.ArgumentParser(description="Run fixed 24h/72h/7d backtests and write reports.")
     parser.add_argument("--report-dir", default="reports/backtests", help="Output directory under project root.")
+    parser.add_argument("--fp-since", default="", help="Only evaluate false-positive alerts at/after this ISO timestamp.")
     parser.add_argument("--sample-items", type=int, default=300)
     parser.add_argument("--lookback-points", type=int, default=2880)
     parser.add_argument("--min-history-points", type=int, default=24)
@@ -78,6 +79,7 @@ def main() -> None:
     summary: dict[str, Any] = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "report_dir": str(report_dir),
+        "fp_since": str(args.fp_since or ""),
         "windows": {},
     }
 
@@ -121,6 +123,7 @@ def main() -> None:
                 str(fp_script),
                 "--days",
                 str(days),
+                *(["--since", str(args.fp_since)] if str(args.fp_since or "").strip() else []),
                 "--horizon-hours",
                 str(int(args.horizon_hours)),
                 "--up-threshold-pct",
