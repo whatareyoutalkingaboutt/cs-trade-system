@@ -13,8 +13,10 @@ from sqlalchemy import and_, func, select
 from backend.core.cache import (
     ARBITRAGE_TTL_SECONDS,
     allow_rate_limit,
+    append_snapshot_history,
     cache_arbitrage_opportunities,
     get_dragonfly_client,
+    get_snapshot_history_bulk,
 )
 from backend.core.database import get_sessionmaker
 from backend.models import Item, PlatformConfig, PriceHistory
@@ -77,6 +79,38 @@ ARBITRAGE_CASE_CONFIRM_ENABLED = os.getenv("ARBITRAGE_CASE_CONFIRM_ENABLED", "tr
 }
 ARBITRAGE_CASE_CONFIRM_CONSECUTIVE_HOURS = int(os.getenv("ARBITRAGE_CASE_CONFIRM_CONSECUTIVE_HOURS", "2"))
 ARBITRAGE_CASE_CONFIRM_LOOKBACK_HOURS = int(os.getenv("ARBITRAGE_CASE_CONFIRM_LOOKBACK_HOURS", "6"))
+ARBITRAGE_STRATEGY_SNAPSHOT_LOOKBACK_POINTS = int(os.getenv("ARBITRAGE_STRATEGY_SNAPSHOT_LOOKBACK_POINTS", "2880"))
+ARBITRAGE_REQUIRE_TIMING_SIGNAL = os.getenv("ARBITRAGE_REQUIRE_TIMING_SIGNAL", "false").strip().lower() in {
+    "1",
+    "true",
+    "yes",
+    "on",
+}
+ARBITRAGE_RISK_FREE_MIN_ROI_PCT = float(os.getenv("ARBITRAGE_RISK_FREE_MIN_ROI_PCT", "3.5"))
+ARBITRAGE_VOLUME_BREAKOUT_MIN_SELL_DROP_PCT = float(
+    os.getenv("ARBITRAGE_VOLUME_BREAKOUT_MIN_SELL_DROP_PCT", "15.0")
+)
+ARBITRAGE_VOLUME_BREAKOUT_MIN_PRICE_SURGE_PCT = float(
+    os.getenv("ARBITRAGE_VOLUME_BREAKOUT_MIN_PRICE_SURGE_PCT", "5.0")
+)
+ARBITRAGE_VOLUME_BREAKOUT_MIN_VOLUME_SPIKE = float(
+    os.getenv("ARBITRAGE_VOLUME_BREAKOUT_MIN_VOLUME_SPIKE", "3.0")
+)
+ARBITRAGE_PANIC_DUMP_MIN_SELL_SURGE_PCT = float(os.getenv("ARBITRAGE_PANIC_DUMP_MIN_SELL_SURGE_PCT", "20.0"))
+ARBITRAGE_PANIC_DUMP_MIN_BUY_WALL_RATIO = float(os.getenv("ARBITRAGE_PANIC_DUMP_MIN_BUY_WALL_RATIO", "0.15"))
+ARBITRAGE_STALE_LISTING_MIN_ROI_PCT = float(os.getenv("ARBITRAGE_STALE_LISTING_MIN_ROI_PCT", "10.0"))
+ARBITRAGE_STALE_LISTING_MAX_YYYP_SELL_NUM = int(os.getenv("ARBITRAGE_STALE_LISTING_MAX_YYYP_SELL_NUM", "15"))
+ARBITRAGE_STALE_LISTING_MIN_7D_VOLUME = float(os.getenv("ARBITRAGE_STALE_LISTING_MIN_7D_VOLUME", "5.0"))
+ARBITRAGE_STALE_LISTING_MIN_PRICE_DEVIATION_PCT = float(
+    os.getenv("ARBITRAGE_STALE_LISTING_MIN_PRICE_DEVIATION_PCT", "15.0")
+)
+ARBITRAGE_MEAN_REVERSION_MIN_SUPPORT_RATIO = float(os.getenv("ARBITRAGE_MEAN_REVERSION_MIN_SUPPORT_RATIO", "3.0"))
+ARBITRAGE_MEAN_REVERSION_MIN_TOTAL_SELL_LISTINGS = int(
+    os.getenv("ARBITRAGE_MEAN_REVERSION_MIN_TOTAL_SELL_LISTINGS", "2000")
+)
+ARBITRAGE_ACCUMULATION_MAX_VOLATILITY = float(os.getenv("ARBITRAGE_ACCUMULATION_MAX_VOLATILITY", "0.03"))
+ARBITRAGE_ACCUMULATION_MIN_SELL_DECLINE = float(os.getenv("ARBITRAGE_ACCUMULATION_MIN_SELL_DECLINE", "0.20"))
+ARBITRAGE_ACCUMULATION_MIN_VOLUME_AMP = float(os.getenv("ARBITRAGE_ACCUMULATION_MIN_VOLUME_AMP", "1.5"))
 
 
 @dataclass(frozen=True)
@@ -572,6 +606,323 @@ def _should_stop_add_on_drawdown(session, item_id: int) -> bool:
     return _should_stop_add_on_drawdown_from_series(series)
 
 
+def _mean(values: list[float]) -> float:
+    if not values:
+        return 0.0
+    return sum(values) / len(values)
+
+
+def _stddev(values: list[float]) -> float:
+    if len(values) < 2:
+        return 0.0
+    avg = _mean(values)
+    variance = sum((value - avg) ** 2 for value in values) / len(values)
+    return variance ** 0.5
+
+
+def _normalize_snapshot_history_rows(rows: list[dict]) -> list[dict]:
+    result: list[dict] = []
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        ts_raw = row.get("updated_at")
+        if not ts_raw:
+            continue
+        try:
+            ts = _parse_timestamp(ts_raw)
+        except Exception:
+            continue
+        result.append({**row, "_ts": ts})
+    result.sort(key=lambda item: item["_ts"])
+    return result
+
+
+def _snapshot_reference_at_minutes_ago(rows: list[dict], minutes_ago: int) -> Optional[dict]:
+    if not rows:
+        return None
+    latest_ts = rows[-1]["_ts"]
+    target_ts = latest_ts - timedelta(minutes=max(1, int(minutes_ago)))
+    candidate = None
+    for row in rows:
+        if row["_ts"] <= target_ts:
+            candidate = row
+        else:
+            break
+    return candidate
+
+
+def _snapshot_reference_at_days_ago(rows: list[dict], days_ago: int) -> Optional[dict]:
+    return _snapshot_reference_at_minutes_ago(rows, minutes_ago=max(1, int(days_ago)) * 24 * 60)
+
+
+def _load_buff_daily_ohlcv_series_map(
+    session,
+    item_ids: set[int],
+    lookback_days: int = 40,
+) -> dict[int, list[dict]]:
+    if not item_ids:
+        return {}
+    cutoff = datetime.now(timezone.utc) - timedelta(days=max(1, int(lookback_days)))
+    rows = session.execute(
+        select(
+            PriceHistory.item_id,
+            PriceHistory.time,
+            PriceHistory.price,
+            PriceHistory.volume,
+        )
+        .where(
+            PriceHistory.item_id.in_(item_ids),
+            PriceHistory.platform == "buff",
+            PriceHistory.time >= cutoff,
+        )
+        .order_by(PriceHistory.item_id.asc(), PriceHistory.time.asc())
+    ).all()
+
+    grouped: dict[int, dict[datetime, dict[str, float]]] = {}
+    for item_id, time_value, price_value, volume_value in rows:
+        if price_value is None:
+            continue
+        ts = time_value.astimezone(timezone.utc)
+        day_bucket = ts.replace(hour=0, minute=0, second=0, microsecond=0)
+        item_key = int(item_id)
+        day_row = grouped.setdefault(item_key, {}).get(day_bucket)
+        price = float(price_value)
+        volume = float(volume_value or 0.0)
+        if day_row is None:
+            grouped[item_key][day_bucket] = {
+                "o": price,
+                "h": price,
+                "l": price,
+                "c": price,
+                "v_sum": volume,
+                "v_count": 1.0,
+            }
+            continue
+
+        day_row["h"] = max(float(day_row["h"]), price)
+        day_row["l"] = min(float(day_row["l"]), price)
+        day_row["c"] = price
+        day_row["v_sum"] = float(day_row["v_sum"]) + volume
+        day_row["v_count"] = float(day_row["v_count"]) + 1.0
+
+    result: dict[int, list[dict]] = {}
+    for item_id, per_day in grouped.items():
+        daily_rows: list[dict] = []
+        for bucket, row in sorted(per_day.items(), key=lambda item: item[0]):
+            v_count = max(1.0, float(row["v_count"]))
+            daily_rows.append(
+                {
+                    "t": bucket.isoformat(),
+                    "o": float(row["o"]),
+                    "h": float(row["h"]),
+                    "l": float(row["l"]),
+                    "c": float(row["c"]),
+                    "v": float(row["v_sum"]) / v_count,
+                }
+            )
+        result[item_id] = daily_rows
+    return result
+
+
+def _evaluate_timing_strategies(
+    *,
+    row: dict,
+    snapshot_history_rows: list[dict],
+    daily_kline: list[dict],
+    sell_fee_rate: float,
+) -> dict:
+    signals: list[dict] = []
+
+    youpin_sell_price = _safe_float(row.get("yyyp_sell_price"))
+    youpin_sell_num = _safe_int(row.get("yyyp_sell_num"))
+    youpin_buy_num = _safe_int(row.get("yyyp_buy_num"))
+    buff_sell_price = _safe_float(row.get("buff_sell_price"))
+    buff_buy_price = _safe_float(row.get("buff_buy_price"))
+    buff_sell_num = _safe_int(row.get("buff_sell_num"))
+    buff_buy_num = _safe_int(row.get("buff_buy_num"))
+    total_sell_num = int(buff_sell_num or 0) + int(youpin_sell_num or 0)
+    total_buy_num = int(buff_buy_num or 0) + int(youpin_buy_num or 0)
+
+    closes = [
+        value
+        for value in (_safe_float(point.get("c")) for point in daily_kline)
+        if value is not None and value > 0
+    ]
+    volumes = [
+        value
+        for value in (_safe_float(point.get("v")) for point in daily_kline)
+        if value is not None and value >= 0
+    ]
+
+    # 策略3：求购墙托底（主策略）
+    if youpin_sell_price and youpin_sell_price > 0 and buff_buy_price and buff_buy_price > 0:
+        safe_exit_price = buff_buy_price * (1 - sell_fee_rate) * ARBITRAGE_WITHDRAWAL_RATE
+        roi_pct = (safe_exit_price - youpin_sell_price) / youpin_sell_price * 100.0
+        if roi_pct >= ARBITRAGE_RISK_FREE_MIN_ROI_PCT:
+            signals.append(
+                {
+                    "name": "RISK_FREE_BID_ARBITRAGE",
+                    "urgency": "HIGH",
+                    "confidence": 0.92,
+                    "score": 95.0 + min(20.0, roi_pct),
+                }
+            )
+
+    history = _normalize_snapshot_history_rows(snapshot_history_rows)
+    ref_15m = _snapshot_reference_at_minutes_ago(history, minutes_ago=15)
+    ref_30m = _snapshot_reference_at_minutes_ago(history, minutes_ago=30)
+    ref_7d = _snapshot_reference_at_days_ago(history, days_ago=7)
+
+    # 策略1：巨量扫货突破
+    if (
+        ref_15m
+        and total_sell_num > 0
+        and buff_sell_price and buff_sell_price > 0
+        and len(volumes) >= 8
+    ):
+        ref_total_sell = int(_safe_int(ref_15m.get("buff_sell_num")) or 0) + int(_safe_int(ref_15m.get("yyyp_sell_num")) or 0)
+        ref_price = _safe_float(ref_15m.get("buff_sell_price"))
+        if ref_total_sell > 0 and ref_price and ref_price > 0:
+            sell_drop_pct = (total_sell_num - ref_total_sell) / ref_total_sell * 100.0
+            price_surge_pct = (buff_sell_price - ref_price) / ref_price * 100.0
+            base_volumes = volumes[-8:-1]
+            avg_7d_volume = _mean(base_volumes)
+            latest_volume = volumes[-1]
+            volume_spike = (latest_volume / avg_7d_volume) if avg_7d_volume > 0 else 0.0
+            if (
+                sell_drop_pct <= -ARBITRAGE_VOLUME_BREAKOUT_MIN_SELL_DROP_PCT
+                and price_surge_pct >= ARBITRAGE_VOLUME_BREAKOUT_MIN_PRICE_SURGE_PCT
+                and volume_spike >= ARBITRAGE_VOLUME_BREAKOUT_MIN_VOLUME_SPIKE
+            ):
+                signals.append(
+                    {
+                        "name": "VOLUME_BREAKOUT",
+                        "urgency": "CRITICAL",
+                        "confidence": 0.95,
+                        "score": 90.0 + min(20.0, volume_spike * 3),
+                    }
+                )
+
+    # 策略2：恐慌抛售血筹码吞噬
+    if ref_30m and buff_sell_num and buff_sell_num > 0 and buff_sell_price and buff_sell_price > 0 and len(closes) >= 30:
+        ref_sell_num = _safe_int(ref_30m.get("buff_sell_num"))
+        if ref_sell_num and ref_sell_num > 0:
+            sell_surge_pct = (buff_sell_num - ref_sell_num) / ref_sell_num * 100.0
+            min_30d_price = min(closes[-30:])
+            avg_30d_volume = _mean(volumes[-30:]) if len(volumes) >= 30 else 0.0
+            buy_wall_strength = (buff_buy_num / buff_sell_num) if buff_sell_num > 0 else 0.0
+            if (
+                sell_surge_pct >= ARBITRAGE_PANIC_DUMP_MIN_SELL_SURGE_PCT
+                and buff_sell_price < min_30d_price
+                and avg_30d_volume > 100.0
+                and buy_wall_strength >= ARBITRAGE_PANIC_DUMP_MIN_BUY_WALL_RATIO
+            ):
+                signals.append(
+                    {
+                        "name": "PANIC_DUMPING",
+                        "urgency": "HIGH",
+                        "confidence": 0.88,
+                        "score": 86.0 + min(20.0, sell_surge_pct / 4.0),
+                    }
+                )
+
+    # 策略4：僵尸单狙击
+    if (
+        youpin_sell_price and youpin_sell_price > 0
+        and buff_sell_price and buff_sell_price > 0
+        and len(closes) >= 30
+        and int(youpin_sell_num or 0) < ARBITRAGE_STALE_LISTING_MAX_YYYP_SELL_NUM
+    ):
+        paper_roi_pct = (buff_sell_price - youpin_sell_price) / youpin_sell_price * 100.0
+        buff_30d_avg = _mean(closes[-30:])
+        price_deviation_pct = ((buff_30d_avg - youpin_sell_price) / buff_30d_avg * 100.0) if buff_30d_avg > 0 else 0.0
+        total_7d_volume = _mean(volumes[-7:]) * 7 if len(volumes) >= 7 else 0.0
+        if (
+            paper_roi_pct >= ARBITRAGE_STALE_LISTING_MIN_ROI_PCT
+            and total_7d_volume >= ARBITRAGE_STALE_LISTING_MIN_7D_VOLUME
+            and price_deviation_pct >= ARBITRAGE_STALE_LISTING_MIN_PRICE_DEVIATION_PCT
+        ):
+            signals.append(
+                {
+                    "name": "STALE_LISTING_SNIPE",
+                    "urgency": "MEDIUM",
+                    "confidence": 0.82,
+                    "score": 80.0 + min(15.0, paper_roi_pct / 2.0),
+                }
+            )
+
+    # 策略5：高供给均值回归
+    if buff_sell_price and buff_sell_price > 0 and len(closes) >= 30 and total_sell_num >= ARBITRAGE_MEAN_REVERSION_MIN_TOTAL_SELL_LISTINGS:
+        window = closes[-30:]
+        ma30 = _mean(window)
+        std30 = _stddev(window)
+        boll_lower = ma30 - 2.0 * std30
+        support_ratio = (total_buy_num / total_sell_num) if total_sell_num > 0 else 0.0
+        if buff_sell_price < boll_lower and support_ratio >= ARBITRAGE_MEAN_REVERSION_MIN_SUPPORT_RATIO:
+            signals.append(
+                {
+                    "name": "MEAN_REVERSION_BOTTOM",
+                    "urgency": "MEDIUM",
+                    "confidence": 0.90,
+                    "score": 84.0 + min(10.0, support_ratio),
+                }
+            )
+
+    # 策略6：底部吸筹
+    if ref_7d and len(closes) >= 37 and buff_sell_num and buff_sell_num > 0:
+        ref_sell_num_7d = _safe_int(ref_7d.get("buff_sell_num"))
+        if ref_sell_num_7d and ref_sell_num_7d > 0:
+            last_7d = closes[-7:]
+            price_mean = _mean(last_7d)
+            price_volatility = (_stddev(last_7d) / price_mean) if price_mean > 0 else 1.0
+            sell_decline = (buff_sell_num - ref_sell_num_7d) / ref_sell_num_7d
+            recent_7d_avg_volume = _mean(volumes[-7:])
+            previous_30d_avg_volume = _mean(volumes[-37:-7])
+            volume_amp = (
+                recent_7d_avg_volume / previous_30d_avg_volume
+                if previous_30d_avg_volume > 0
+                else 0.0
+            )
+            if (
+                price_volatility <= ARBITRAGE_ACCUMULATION_MAX_VOLATILITY
+                and sell_decline <= -ARBITRAGE_ACCUMULATION_MIN_SELL_DECLINE
+                and volume_amp >= ARBITRAGE_ACCUMULATION_MIN_VOLUME_AMP
+            ):
+                signals.append(
+                    {
+                        "name": "ACCUMULATION_PHASE",
+                        "urgency": "LOW",
+                        "confidence": 0.85,
+                        "score": 76.0 + min(12.0, volume_amp * 3),
+                    }
+                )
+
+    if not signals:
+        return {
+            "primary_signal": None,
+            "urgency": None,
+            "confidence": None,
+            "recommended_position": None,
+            "signals": [],
+        }
+
+    signals.sort(key=lambda item: float(item.get("score") or 0.0), reverse=True)
+    top = signals[0]
+    position_hint = {
+        "CRITICAL": "0.25x",
+        "HIGH": "0.5x",
+        "MEDIUM": "0.5x",
+        "LOW": "watch",
+    }.get(str(top.get("urgency") or "").upper(), None)
+    return {
+        "primary_signal": str(top["name"]),
+        "urgency": str(top["urgency"]).upper(),
+        "confidence": float(top["confidence"]),
+        "recommended_position": position_hint,
+        "signals": signals,
+    }
+
+
 def _build_csqaq_oneway_opportunities(
     session,
     rows: Iterable[dict],
@@ -584,7 +935,7 @@ def _build_csqaq_oneway_opportunities(
 ) -> list[ArbitrageOpportunity]:
     item_filter = {int(item_id) for item_id in item_ids} if item_ids else None
     opportunities: list[ArbitrageOpportunity] = []
-    pending: list[tuple[ArbitrageOpportunity, Optional[float], str]] = []
+    pending: list[tuple[ArbitrageOpportunity, Optional[float], str, dict]] = []
     calculated_at = datetime.now(timezone.utc)
     redis_client = get_dragonfly_client()
     tags_map = redis_client.hgetall("items:market_maker_tags") or {}
@@ -714,6 +1065,7 @@ def _build_csqaq_oneway_opportunities(
                 ),
                 tier_required_spread,
                 item_category,
+                row,
             )
         )
 
@@ -726,15 +1078,42 @@ def _build_csqaq_oneway_opportunities(
         item_ids=pending_item_ids,
         lookback_hours=24,
     )
+    snapshot_history_map = get_snapshot_history_bulk(
+        pending_item_ids,
+        limit=ARBITRAGE_STRATEGY_SNAPSHOT_LOOKBACK_POINTS,
+    )
+    daily_kline_map = _load_buff_daily_ohlcv_series_map(
+        session=session,
+        item_ids=pending_item_ids,
+        lookback_days=40,
+    )
 
-    for opp, tier_required_spread, item_category in pending:
+    for opp, tier_required_spread, item_category, raw_row in pending:
         series = series_map_24h.get(opp.item_id, [])
         if item_category == "case" and tier_required_spread is not None:
             if not _case_spread_confirmed_from_series(series, required_spread_pct=tier_required_spread):
                 continue
         if _should_stop_add_on_drawdown_from_series(series):
             continue
-        opportunities.append(opp)
+        strategy_eval = _evaluate_timing_strategies(
+            row=raw_row,
+            snapshot_history_rows=snapshot_history_map.get(opp.item_id, []),
+            daily_kline=daily_kline_map.get(opp.item_id, []),
+            sell_fee_rate=sell_fee_rate,
+        )
+        primary_signal = strategy_eval.get("primary_signal")
+        if ARBITRAGE_REQUIRE_TIMING_SIGNAL and not primary_signal:
+            continue
+        next_strategy = str(opp.strategy or "youpin_buy_to_buff_bid")
+        if primary_signal:
+            next_strategy = f"{next_strategy}_signal_{str(primary_signal).lower()}"
+        opportunities.append(
+            replace(
+                opp,
+                strategy=next_strategy,
+                recommended_position=strategy_eval.get("recommended_position") or opp.recommended_position,
+            )
+        )
 
     return opportunities
 
@@ -986,6 +1365,10 @@ def analyze_arbitrage_opportunities(
         )
         if use_csqaq_mode:
             rows = load_csqaq_goods_snapshot(use_cache=use_csqaq_cache)
+            try:
+                append_snapshot_history(rows)
+            except Exception as exc:
+                logger.warning("[Arbitrage] append snapshot history failed: {}", exc)
             row_item_ids = {
                 row_id
                 for row_id in (
@@ -1221,8 +1604,14 @@ def verify_single_high_roi_candidate(
     if item_category == "sticker" and net_profit < ARBITRAGE_STICKER_MIN_NET_PROFIT:
         return None
 
+    snapshot_history_rows = get_snapshot_history_bulk(
+        {item_id},
+        limit=ARBITRAGE_STRATEGY_SNAPSHOT_LOOKBACK_POINTS,
+    ).get(item_id, [])
+
     session = get_sessionmaker()()
     try:
+        daily_kline_map = _load_buff_daily_ohlcv_series_map(session=session, item_ids={item_id}, lookback_days=40)
         if item_category == "case" and tier_required_spread is not None:
             if not _case_spread_confirmed(
                 session=session,
@@ -1234,6 +1623,18 @@ def verify_single_high_roi_candidate(
             return None
     finally:
         session.close()
+
+    strategy_eval = _evaluate_timing_strategies(
+        row=target_row,
+        snapshot_history_rows=snapshot_history_rows,
+        daily_kline=daily_kline_map.get(item_id, []),
+        sell_fee_rate=sell_fee_rate,
+    )
+    if ARBITRAGE_REQUIRE_TIMING_SIGNAL and not strategy_eval.get("primary_signal"):
+        return None
+    strategy_name = str(opportunity_payload.get("strategy") or "youpin_buy_to_buff_bid")
+    if strategy_eval.get("primary_signal"):
+        strategy_name = f"{strategy_name}_signal_{str(strategy_eval['primary_signal']).lower()}"
 
     ts = _parse_timestamp(target_row.get("updated_at"))
     verified = ArbitrageOpportunity(
@@ -1258,10 +1659,10 @@ def verify_single_high_roi_candidate(
         buy_liquidity=buy_liquidity,
         sell_liquidity=sell_liquidity,
         verify_status="verified",
-        strategy=str(opportunity_payload.get("strategy") or "youpin_buy_to_buff_bid"),
+        strategy=strategy_name,
         cross_spread_pct=round(cross_spread_pct, 4) if cross_spread_pct is not None else None,
         signal_tier=signal_tier,
-        recommended_position=recommended_position,
+        recommended_position=strategy_eval.get("recommended_position") or recommended_position,
         stop_add=False,
         dual_daily_volume=round(dual_daily_volume, 2),
         item_category=item_category,

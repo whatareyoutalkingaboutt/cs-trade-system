@@ -58,6 +58,7 @@ from backend.services.anomaly_service import (
     run_data_integrity_check,
 )
 from backend.services.notification_service import notify_arbitrage_opportunities
+from backend.services.notification_service import notify_tiered_alerts
 
 
 def _fetch_youpin_with_fallback(item_name: str) -> tuple[Optional[Dict[str, Any]], Optional[str]]:
@@ -113,6 +114,11 @@ def _to_int(value: Any, default: int) -> int:
 
 def _legacy_multi_platform_enabled() -> bool:
     raw = os.getenv("ENABLE_LEGACY_MULTI_PLATFORM_SCRAPE", "false").strip().lower()
+    return raw in {"1", "true", "yes", "on"}
+
+
+def _env_flag(name: str, default: bool = False) -> bool:
+    raw = os.getenv(name, "true" if default else "false").strip().lower()
     return raw in {"1", "true", "yes", "on"}
 
 
@@ -988,10 +994,11 @@ def sync_csqaq_all_prices(
         gc.collect()
 
         market_maker_result = None
-        try:
-            market_maker_result = detect_market_maker_behavior()
-        except Exception as exc:
-            logger.warning("[Task] Market maker detection failed: {}", exc)
+        if _env_flag("MARKET_MAKER_DETECT_IN_SYNC", default=False):
+            try:
+                market_maker_result = detect_market_maker_behavior()
+            except Exception as exc:
+                logger.warning("[Task] Market maker detection failed: {}", exc)
 
         arbitrage_result = None
         if refresh_arbitrage:
@@ -1262,6 +1269,133 @@ def detect_price_anomalies_task() -> Dict[str, Any]:
         f"published={result.get('published_count', 0)}"
     )
     return result
+
+
+def _market_maker_severity_from_tag(tag: str) -> str:
+    normalized = str(tag or "").strip()
+    if normalized == "[高危黑名单]":
+        return "critical"
+    if normalized in {"[庄家洗盘/画线假摔]", "[主升浪开启]"}:
+        return "high"
+    if normalized == "[疑似吸筹]":
+        return "medium"
+    return "low"
+
+
+def _market_maker_type_from_tag(tag: str) -> str:
+    normalized = str(tag or "").strip()
+    if normalized == "[高危黑名单]":
+        return "distribution_risk"
+    if normalized == "[庄家洗盘/画线假摔]":
+        return "washout_phase"
+    if normalized == "[主升浪开启]":
+        return "markup_phase"
+    if normalized == "[疑似吸筹]":
+        return "accumulation_phase"
+    return "market_maker_tag"
+
+
+@celery_app.task(name='backend.scrapers.celery_tasks.monitor_market_maker_behavior')
+def monitor_market_maker_behavior_task() -> Dict[str, Any]:
+    """
+    庄家行为监控任务（分级预警版）。
+
+    默认每 5 分钟运行一次，流程:
+    1) 刷新庄家标签
+    2) 按标签构造分级告警
+    3) 推送 CRITICAL/HIGH/MEDIUM 到通知通道
+    """
+    if not _env_flag("WHALE_MONITOR_ENABLED", default=True):
+        return {
+            "status": "skipped",
+            "reason": "disabled_by_env",
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+        }
+
+    min_price = _to_float(os.getenv("WHALE_MONITOR_MIN_PRICE"), 500.0)
+    max_scan_items = max(1, _to_int(os.getenv("WHALE_MONITOR_MAX_ITEMS"), 200))
+    max_push = max(1, _to_int(os.getenv("WHALE_ALERT_MAX_PER_RUN"), 10))
+    min_severity = (os.getenv("WHALE_ALERT_MIN_SEVERITY", "medium") or "medium").strip().lower()
+
+    tag_result = detect_market_maker_behavior()
+    tags_map = get_dragonfly_client().hgetall("items:market_maker_tags") or {}
+    if not tags_map:
+        return {
+            "status": "ok",
+            "tagged_items_count": 0,
+            "alerts_generated": 0,
+            "notify_result": None,
+            "tag_result": tag_result,
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+        }
+
+    snapshot_rows = load_csqaq_goods_snapshot(use_cache=True)
+    snapshot_map: Dict[int, Dict[str, Any]] = {}
+    for row in snapshot_rows:
+        if not isinstance(row, dict):
+            continue
+        try:
+            row_id = int(row.get("id"))
+        except (TypeError, ValueError):
+            continue
+        snapshot_map[row_id] = row
+
+    tagged_item_ids = []
+    for raw_item_id in tags_map.keys():
+        try:
+            tagged_item_ids.append(int(raw_item_id))
+        except (TypeError, ValueError):
+            continue
+
+    session = get_sessionmaker()()
+    try:
+        name_rows = session.query(Item.id, Item.market_hash_name).filter(Item.id.in_(tagged_item_ids)).all()
+    finally:
+        session.close()
+    name_map = {int(item_id): str(market_hash_name or item_id) for item_id, market_hash_name in name_rows}
+
+    alerts: List[Dict[str, Any]] = []
+    for item_id in tagged_item_ids[:max_scan_items]:
+        tag = str(tags_map.get(str(item_id)) or "").strip()
+        if not tag:
+            continue
+        snapshot = snapshot_map.get(item_id, {})
+        buff_price = _to_float(snapshot.get("buff_sell_price"), 0.0)
+        youpin_price = _to_float(snapshot.get("yyyp_sell_price"), 0.0)
+        current_price = max(buff_price, youpin_price)
+        if current_price < min_price:
+            continue
+        alerts.append(
+            {
+                "item_id": item_id,
+                "item_name": name_map.get(item_id, str(item_id)),
+                "type": _market_maker_type_from_tag(tag),
+                "severity": _market_maker_severity_from_tag(tag),
+                "message": f"{tag} 当前价={current_price:.2f} CNY",
+                "detail": {
+                    "tag": tag,
+                    "buff_sell_price": buff_price,
+                    "yyyp_sell_price": youpin_price,
+                },
+                "event_time": datetime.now(timezone.utc).isoformat(),
+            }
+        )
+
+    notify_result = notify_tiered_alerts(
+        alerts,
+        event_type="market_maker_alerts",
+        max_items=max_push,
+        min_severity=min_severity,
+    )
+
+    return {
+        "status": "ok",
+        "tagged_items_count": len(tags_map),
+        "alerts_generated": len(alerts),
+        "notify_result": notify_result,
+        "tag_result": tag_result,
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+    }
 
 
 @celery_app.task(name='backend.scrapers.celery_tasks.check_data_integrity')

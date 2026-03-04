@@ -55,6 +55,7 @@ celery_app.conf.task_routes = {
     'backend.scrapers.celery_tasks.scrape_all_platforms': {'queue': 'default'},
     'backend.scrapers.celery_tasks.sync_base_items': {'queue': 'default'},
     'backend.scrapers.celery_tasks.sync_csqaq_all_prices': {'queue': 'default'},
+    'backend.scrapers.celery_tasks.monitor_market_maker_behavior': {'queue': 'default'},
     'backend.scrapers.celery_tasks.dispatch_high_priority_verify_queue': {'queue': 'default'},
     'backend.scrapers.celery_tasks.refresh_item_baselines': {'queue': 'default'},
     'backend.scrapers.celery_tasks.verify_and_alert_task': {'queue': 'verify'},

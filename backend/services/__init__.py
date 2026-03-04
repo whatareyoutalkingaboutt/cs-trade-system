@@ -19,6 +19,7 @@ from .wear_service import (
 )
 from .notification_service import (
     notify_arbitrage_opportunities,
+    notify_tiered_alerts,
     publish_notification,
 )
 from .baseline_service import (
@@ -38,6 +39,7 @@ __all__ = [
     "get_wear_by_inspect_url",
     "get_inspect_image_by_inspect_url",
     "notify_arbitrage_opportunities",
+    "notify_tiered_alerts",
     "publish_notification",
     "refresh_item_baselines",
 ]

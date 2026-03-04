@@ -4,6 +4,7 @@ import json
 import os
 import time
 import uuid
+from datetime import datetime, timezone
 from typing import Any, Iterable, Optional, Tuple
 
 import redis
@@ -17,8 +18,11 @@ ARBITRAGE_TTL_SECONDS = 300
 KLINE_TTL_SECONDS = 1800
 SEARCH_CACHE_TTL_SECONDS = 120
 CSQAQ_SERIES_MAX_POINTS = 2880
+SNAPSHOT_HISTORY_MAX_POINTS = int(os.getenv("SNAPSHOT_HISTORY_MAX_POINTS", "2880"))
+SNAPSHOT_HISTORY_TTL_SECONDS = int(os.getenv("SNAPSHOT_HISTORY_TTL_SECONDS", "691200"))
 BASELINE_TTL_SECONDS = 7200
 LATEST_PRICE_SNAPSHOT_HASH_KEY = "items:latest_price"
+SNAPSHOT_HISTORY_INDEX_KEY = "snapshot:history:index"
 HIGH_PRIORITY_VERIFY_QUEUE_KEY = "queue:verify:high_priority"
 HIGH_PRIORITY_VERIFY_PAYLOAD_HASH_KEY = "queue:verify:high_priority:payload"
 
@@ -376,6 +380,127 @@ def get_hot_items_by_score(limit: int = 20) -> list[int]:
     client = get_dragonfly_client()
     values = client.zrevrange("items:hot:search", 0, limit - 1)
     return [int(value) for value in values]
+
+
+def snapshot_history_key(item_id: int) -> str:
+    return f"snapshot:history:item:{int(item_id)}"
+
+
+def _normalize_snapshot_point(row: dict) -> Optional[dict]:
+    try:
+        item_id = int(row.get("id"))
+    except (TypeError, ValueError):
+        return None
+
+    timestamp_raw = row.get("updated_at")
+    if timestamp_raw is None:
+        return None
+    if isinstance(timestamp_raw, str):
+        ts = timestamp_raw
+    else:
+        ts = str(timestamp_raw)
+    if not ts:
+        return None
+
+    try:
+        ts_value = datetime.fromisoformat(ts)
+    except ValueError:
+        return None
+    if ts_value.tzinfo is None:
+        ts_value = ts_value.replace(tzinfo=timezone.utc)
+
+    point = {
+        "id": item_id,
+        "market_hash_name": row.get("market_hash_name"),
+        "updated_at": ts_value.astimezone(timezone.utc).isoformat(),
+        "buff_sell_price": row.get("buff_sell_price"),
+        "buff_buy_price": row.get("buff_buy_price"),
+        "buff_sell_num": row.get("buff_sell_num"),
+        "buff_buy_num": row.get("buff_buy_num"),
+        "yyyp_sell_price": row.get("yyyp_sell_price"),
+        "yyyp_buy_price": row.get("yyyp_buy_price"),
+        "yyyp_sell_num": row.get("yyyp_sell_num"),
+        "yyyp_buy_num": row.get("yyyp_buy_num"),
+    }
+    return point
+
+
+def append_snapshot_history(
+    rows: Iterable[dict],
+    max_points: int = SNAPSHOT_HISTORY_MAX_POINTS,
+    ttl: int = SNAPSHOT_HISTORY_TTL_SECONDS,
+) -> int:
+    """
+    按 item_id 追加全量快照的时序历史。
+    """
+    cap = max(24, int(max_points))
+    expiry = max(300, int(ttl))
+    client = get_dragonfly_client()
+    pipeline = client.pipeline()
+    appended = 0
+
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        point = _normalize_snapshot_point(row)
+        if point is None:
+            continue
+        item_id = int(point["id"])
+        key = snapshot_history_key(item_id)
+        payload = json.dumps(point, ensure_ascii=True, separators=(",", ":"))
+        pipeline.rpush(key, payload)
+        pipeline.ltrim(key, -cap, -1)
+        pipeline.expire(key, expiry)
+        pipeline.sadd(SNAPSHOT_HISTORY_INDEX_KEY, str(item_id))
+        appended += 1
+
+    if appended:
+        pipeline.expire(SNAPSHOT_HISTORY_INDEX_KEY, expiry)
+        pipeline.execute()
+    return appended
+
+
+def get_snapshot_history(item_id: int, limit: int = SNAPSHOT_HISTORY_MAX_POINTS) -> list[dict]:
+    client = get_dragonfly_client()
+    cap = max(1, int(limit))
+    values = client.lrange(snapshot_history_key(item_id), -cap, -1)
+    rows: list[dict] = []
+    for raw in values:
+        try:
+            row = json.loads(raw)
+        except Exception:
+            continue
+        if isinstance(row, dict):
+            rows.append(row)
+    return rows
+
+
+def get_snapshot_history_bulk(
+    item_ids: Iterable[int],
+    limit: int = SNAPSHOT_HISTORY_MAX_POINTS,
+) -> dict[int, list[dict]]:
+    ids = [int(item_id) for item_id in item_ids]
+    if not ids:
+        return {}
+    client = get_dragonfly_client()
+    cap = max(1, int(limit))
+    pipeline = client.pipeline()
+    for item_id in ids:
+        pipeline.lrange(snapshot_history_key(item_id), -cap, -1)
+    raw_groups = pipeline.execute()
+
+    result: dict[int, list[dict]] = {}
+    for item_id, raw_values in zip(ids, raw_groups):
+        rows: list[dict] = []
+        for raw in raw_values:
+            try:
+                row = json.loads(raw)
+            except Exception:
+                continue
+            if isinstance(row, dict):
+                rows.append(row)
+        result[item_id] = rows
+    return result
 
 
 def csqaq_metric_series_key(item_id: int, platform: str, metric: str) -> str:

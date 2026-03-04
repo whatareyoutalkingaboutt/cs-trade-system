@@ -137,6 +137,16 @@ beat_schedule = {
         }
     },
 
+    # 庄家行为监控（每5分钟）
+    'monitor-market-maker-behavior': {
+        'task': 'backend.scrapers.celery_tasks.monitor_market_maker_behavior',
+        'schedule': timedelta(minutes=5),
+        'options': {
+            'queue': 'default',
+            'expires': 240,
+        }
+    },
+
     # 热门饰品榜单计算（每15分钟）
     'calculate-daily-rankings': {
         'task': 'backend.scrapers.celery_tasks.calculate_daily_rankings',

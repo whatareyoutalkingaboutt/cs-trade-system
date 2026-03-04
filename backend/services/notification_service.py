@@ -15,6 +15,7 @@ from backend.services.email_service import send_qq_email
 
 
 DEFAULT_NOTIFICATION_CHANNEL = "notifications:arbitrage"
+DEFAULT_TIERED_NOTIFICATION_CHANNEL = "notifications:tiered_alerts"
 DEFAULT_NOTIFY_MIN_PROFIT_RATE = float(os.getenv("ARBITRAGE_NOTIFY_MIN_PROFIT_RATE", "8.0"))
 DEFAULT_NOTIFY_MAX_ITEMS = int(os.getenv("ARBITRAGE_NOTIFY_MAX_ITEMS", "5"))
 DEFAULT_WEBHOOK_TIMEOUT_SECONDS = int(os.getenv("NOTIFY_WEBHOOK_TIMEOUT_SECONDS", "8"))
@@ -23,6 +24,13 @@ PLATFORM_LABELS = {
     "youpin": "悠悠有品",
     "steam": "Steam",
     "c5game": "C5",
+}
+SEVERITY_RANK = {
+    "critical": 4,
+    "high": 3,
+    "medium": 2,
+    "low": 1,
+    "info": 0,
 }
 
 
@@ -108,6 +116,20 @@ def _resolve_severity(profit_rate: float | None) -> str:
     if profit_rate >= 3:
         return "medium"
     return "info"
+
+
+def _normalize_severity(value: Any, default: str = "info") -> str:
+    text = str(value or "").strip().lower()
+    if text in SEVERITY_RANK:
+        return text
+    aliases = {
+        "warn": "medium",
+        "warning": "medium",
+        "urgent": "critical",
+    }
+    if text in aliases:
+        return aliases[text]
+    return default
 
 
 def _persist_alert_logs(rows: list[Mapping[str, Any]]) -> int:
@@ -239,6 +261,145 @@ def notify_arbitrage_opportunities(
     return {
         "notification_channel": channel,
         "alert_candidates": len(filtered),
+        "published": len(top_items),
+        "db_logged": db_logged,
+        "webhook_sent": sent_webhook,
+        "email_sent": sent_email,
+    }
+
+
+def _persist_tiered_alert_logs(alerts: list[Mapping[str, Any]], trigger_type: str) -> int:
+    if not alerts:
+        return 0
+    now = datetime.now(timezone.utc)
+    insert_values: list[dict[str, Any]] = []
+    for row in alerts:
+        payload = dict(row)
+        severity = _normalize_severity(payload.get("severity") or payload.get("level"), default="info")
+        item_name = str(
+            payload.get("item_name")
+            or payload.get("market_hash_name")
+            or payload.get("title")
+            or payload.get("item")
+            or "-"
+        )
+        insert_values.append(
+            {
+                "event_time": now,
+                "item_id": _safe_int(payload.get("item_id")),
+                "market_hash_name": item_name,
+                "buy_platform": None,
+                "sell_platform": None,
+                "trigger_type": trigger_type,
+                "severity": severity,
+                "message": str(payload.get("message") or payload.get("detail") or payload.get("type") or "tiered_alert"),
+                "payload": json.dumps(payload, ensure_ascii=True, separators=(",", ":")),
+            }
+        )
+
+    session = get_sessionmaker()()
+    inserted = 0
+    try:
+        insert_stmt = text(
+            """
+            INSERT INTO alert_logs
+                (event_time, item_id, market_hash_name, buy_platform, sell_platform, trigger_type, severity, message, payload)
+            VALUES
+                (:event_time, :item_id, :market_hash_name, :buy_platform, :sell_platform, :trigger_type, :severity, :message, CAST(:payload AS JSONB))
+            """
+        )
+        for value in insert_values:
+            try:
+                session.execute(insert_stmt, value)
+                session.commit()
+                inserted += 1
+            except Exception as exc:
+                session.rollback()
+                logger.warning("[Notify] persist tiered alert failed: {}", exc)
+        return inserted
+    finally:
+        session.close()
+
+
+def notify_tiered_alerts(
+    alerts: Iterable[Mapping[str, Any]],
+    *,
+    event_type: str = "tiered_alerts",
+    channel: str = DEFAULT_TIERED_NOTIFICATION_CHANNEL,
+    max_items: int = 10,
+    min_severity: str = "medium",
+) -> dict:
+    rows = [dict(row) for row in alerts if isinstance(row, Mapping)]
+    if not rows:
+        return {
+            "notification_channel": channel,
+            "event_type": event_type,
+            "received": 0,
+            "published": 0,
+            "db_logged": 0,
+            "webhook_sent": False,
+            "email_sent": False,
+        }
+
+    threshold = SEVERITY_RANK.get(_normalize_severity(min_severity, default="medium"), 2)
+    filtered: list[dict[str, Any]] = []
+    for row in rows:
+        severity = _normalize_severity(row.get("severity") or row.get("level"), default="info")
+        if SEVERITY_RANK.get(severity, 0) < threshold:
+            continue
+        row["severity"] = severity
+        filtered.append(row)
+
+    filtered.sort(key=lambda item: SEVERITY_RANK.get(str(item.get("severity") or "info"), 0), reverse=True)
+    top_items = filtered[:max(0, int(max_items))]
+    if top_items:
+        publish_notification(event_type=event_type, data=top_items, channel=channel)
+
+    db_logged = _persist_tiered_alert_logs(top_items, trigger_type=event_type)
+
+    sent_webhook = False
+    sent_email = False
+    if top_items:
+        icon_map = {
+            "critical": "🔴",
+            "high": "🟠",
+            "medium": "🟡",
+            "low": "🟢",
+            "info": "🔵",
+        }
+        lines = [f"[{event_type}] 分级预警："]
+        html_lines = [
+            f"<h3>{event_type} 分级预警</h3>",
+            "<table border='1' cellspacing='0' cellpadding='6'>",
+            "<tr><th>等级</th><th>类型</th><th>商品</th><th>详情</th></tr>",
+        ]
+
+        for row in top_items:
+            severity = _normalize_severity(row.get("severity"), default="info")
+            level_icon = icon_map.get(severity, "🔵")
+            item_name = str(
+                row.get("item_name")
+                or row.get("market_hash_name")
+                or row.get("title")
+                or row.get("item")
+                or "-"
+            )
+            alert_type = str(row.get("type") or row.get("event") or event_type)
+            message = str(row.get("message") or row.get("detail") or "-")
+            lines.append(f"{level_icon} [{severity.upper()}] {alert_type} | {item_name} | {message}")
+            html_lines.append(
+                f"<tr><td>{severity.upper()}</td><td>{alert_type}</td><td>{item_name}</td><td>{message}</td></tr>"
+            )
+
+        html_lines.append("</table>")
+        sent_webhook = _post_webhook_text("\n".join(lines))
+        subject = f"分级预警：{event_type}（{len(top_items)}条）"
+        sent_email = send_qq_email(subject, "".join(html_lines))
+
+    return {
+        "notification_channel": channel,
+        "event_type": event_type,
+        "received": len(rows),
         "published": len(top_items),
         "db_logged": db_logged,
         "webhook_sent": sent_webhook,
