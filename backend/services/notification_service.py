@@ -84,6 +84,32 @@ def _item_label(row: Mapping[str, Any]) -> str:
     )
 
 
+def _arbitrage_action(row: Mapping[str, Any]) -> str:
+    buy_platform = _platform_label(row.get("buy_platform"))
+    sell_platform = _platform_label(row.get("sell_platform"))
+    return f"买入{buy_platform}，卖出{sell_platform}"
+
+
+def _tiered_action(row: Mapping[str, Any], event_type: str) -> str:
+    alert_key = str(row.get("type") or row.get("event") or event_type or "").strip().lower()
+    severity = _normalize_severity(row.get("severity") or row.get("level"), default="info")
+    if alert_key == "distribution_risk":
+        return "优先卖出或减仓，等待风险释放"
+    if alert_key == "washout_phase":
+        return "轻仓分批买入，避免追高"
+    if alert_key == "accumulation_phase":
+        return "观察回踩后分批布局"
+    if alert_key == "markup_phase":
+        return "可顺势跟随买入，设置止盈"
+    if alert_key == "market_maker_tag":
+        return "观察成交变化，谨慎追高"
+    if severity in {"critical", "high"}:
+        return "暂缓买入，优先控制仓位"
+    if severity == "medium":
+        return "保持观察，等待二次确认"
+    return "继续观察，暂不操作"
+
+
 def _qq_webhook_url() -> str:
     return (
         os.getenv("QQ_BOT_WEBHOOK_URL")
@@ -183,6 +209,9 @@ def _persist_alert_logs(rows: list[Mapping[str, Any]]) -> int:
         item_label = _item_label(row)
         buy_platform = str(row.get("buy_platform") or "")
         sell_platform = str(row.get("sell_platform") or "")
+        action = str(row.get("action") or _arbitrage_action(row))
+        payload = dict(row)
+        payload.setdefault("action", action)
         values.append(
             {
                 "event_time": now,
@@ -194,9 +223,9 @@ def _persist_alert_logs(rows: list[Mapping[str, Any]]) -> int:
                 "severity": _resolve_severity(profit_rate),
                 "message": (
                     f"{item_label}：{_platform_label(buy_platform)}买入，{_platform_label(sell_platform)}卖出；"
-                    f"收益率={row.get('profit_rate')}%，预计净利润={row.get('net_profit')}元"
+                    f"收益率={row.get('profit_rate')}%，预计净利润={row.get('net_profit')}元；建议={action}"
                 ),
-                "payload": json.dumps(dict(row), ensure_ascii=True, separators=(",", ":")),
+                "payload": json.dumps(payload, ensure_ascii=True, separators=(",", ":")),
             }
         )
 
@@ -256,38 +285,47 @@ def notify_arbitrage_opportunities(
 
     filtered.sort(key=lambda item: float(item.get("profit_rate") or 0.0), reverse=True)
     top_items = filtered[:max(0, max_items)]
-    if top_items:
+    enriched_top_items: list[dict[str, Any]] = []
+    for row in top_items:
+        payload = dict(row)
+        payload["action"] = str(payload.get("action") or _arbitrage_action(payload))
+        enriched_top_items.append(payload)
+
+    if enriched_top_items:
         publish_notification(
             event_type="arbitrage_alerts",
-            data=top_items,
+            data=enriched_top_items,
             channel=channel,
         )
-    db_logged = _persist_alert_logs(top_items)
+    db_logged = _persist_alert_logs(enriched_top_items)
 
     sent_webhook = False
     sent_email = False
-    if top_items:
+    if enriched_top_items:
         lines = ["[套利告警] 检测到可执行机会："]
         html_lines = [
             "<h3>套利雷达发现以下机会：</h3>",
             "<table border='1' cellspacing='0' cellpadding='6'>",
-            "<tr><th>序号</th><th>饰品</th><th>买入平台</th><th>卖出平台</th><th>收益率</th><th>预计净利润(元)</th></tr>",
+            "<tr><th>序号</th><th>饰品</th><th>买入平台</th><th>卖出平台</th><th>收益率</th><th>预计净利润(元)</th><th>操作建议</th></tr>",
         ]
 
-        for idx, row in enumerate(top_items, start=1):
+        for idx, row in enumerate(enriched_top_items, start=1):
             item_name = _item_label(row)
             buy_platform = _platform_label(row.get("buy_platform"))
             sell_platform = _platform_label(row.get("sell_platform"))
+            action = str(row.get("action") or _arbitrage_action(row))
             text_line = (
                 f"{idx}. 饰品：{item_name}；买入平台：{buy_platform}；卖出平台：{sell_platform}；"
-                f"收益率：{row.get('profit_rate', '-')}%；预计净利润：{row.get('net_profit', '-')}元"
+                f"收益率：{row.get('profit_rate', '-')}%；预计净利润：{row.get('net_profit', '-')}元；"
+                f"建议：{action}"
             )
             lines.append(text_line)
 
             html_lines.append(
                 (
                     f"<tr><td>{idx}</td><td>{item_name}</td><td>{buy_platform}</td><td>{sell_platform}</td>"
-                    f"<td>{row.get('profit_rate', '-')}%</td><td>{row.get('net_profit', '-')}</td></tr>"
+                    f"<td>{row.get('profit_rate', '-')}%</td><td>{row.get('net_profit', '-')}</td>"
+                    f"<td>{action}</td></tr>"
                 )
             )
 
@@ -296,13 +334,13 @@ def notify_arbitrage_opportunities(
         # 原有的 Webhook 推送
         sent_webhook = _post_webhook_text("\n".join(lines))
         # 新增的 QQ 邮件推送
-        subject = f"套利告警：发现 {len(top_items)} 个可执行机会"
+        subject = f"套利告警：发现 {len(enriched_top_items)} 个可执行机会"
         sent_email = send_qq_email(subject, "".join(html_lines))
 
     return {
         "notification_channel": channel,
         "alert_candidates": len(filtered),
-        "published": len(top_items),
+        "published": len(enriched_top_items),
         "db_logged": db_logged,
         "webhook_sent": sent_webhook,
         "email_sent": sent_email,
@@ -317,6 +355,7 @@ def _persist_tiered_alert_logs(alerts: list[Mapping[str, Any]], trigger_type: st
     for row in alerts:
         payload = dict(row)
         severity = _normalize_severity(payload.get("severity") or payload.get("level"), default="info")
+        payload.setdefault("action", _tiered_action(payload, trigger_type))
         item_name = str(
             payload.get("item_name_cn")
             or payload.get("item_name")
@@ -391,6 +430,7 @@ def notify_tiered_alerts(
         if SEVERITY_RANK.get(severity, 0) < threshold:
             continue
         row["severity"] = severity
+        row["action"] = str(row.get("action") or _tiered_action(row, event_type))
         filtered.append(row)
 
     filtered.sort(key=lambda item: SEVERITY_RANK.get(str(item.get("severity") or "info"), 0), reverse=True)
@@ -408,7 +448,7 @@ def notify_tiered_alerts(
         html_lines = [
             f"<h3>{event_label}</h3>",
             "<table border='1' cellspacing='0' cellpadding='6'>",
-            "<tr><th>等级</th><th>类型</th><th>商品</th><th>详情</th></tr>",
+            "<tr><th>等级</th><th>类型</th><th>商品</th><th>详情</th><th>操作建议</th></tr>",
         ]
 
         for row in top_items:
@@ -425,9 +465,10 @@ def notify_tiered_alerts(
             )
             alert_type = _alert_type_label(row.get("type") or row.get("event") or event_type)
             message = str(row.get("message") or row.get("detail") or "-")
-            lines.append(f"[{severity_label}] {alert_type} | {item_name} | {message}")
+            action = str(row.get("action") or _tiered_action(row, event_type))
+            lines.append(f"[{severity_label}] {alert_type} | {item_name} | {message} | 建议：{action}")
             html_lines.append(
-                f"<tr><td>{severity_label}</td><td>{alert_type}</td><td>{item_name}</td><td>{message}</td></tr>"
+                f"<tr><td>{severity_label}</td><td>{alert_type}</td><td>{item_name}</td><td>{message}</td><td>{action}</td></tr>"
             )
 
         html_lines.append("</table>")

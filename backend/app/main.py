@@ -6,6 +6,7 @@ import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from backend.app.routers.alerts import router as alerts_router
 from backend.app.routers.arbitrage import router as arbitrage_router
 from backend.app.routers.auth import router as auth_router
 from backend.app.routers.items import router as items_router
@@ -52,6 +53,7 @@ app.include_router(auth_router)
 app.include_router(items_router)
 app.include_router(prices_router)
 app.include_router(arbitrage_router)
+app.include_router(alerts_router)
 app.include_router(scraper_router)
 app.include_router(wear_router)
 

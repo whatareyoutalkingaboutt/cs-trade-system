@@ -7,6 +7,7 @@ const LINKS = [
   { href: "/dashboard", label: "仪表盘" },
   { href: "/items", label: "饰品管理" },
   { href: "/arbitrage", label: "套利分析" },
+  { href: "/alerts", label: "报警记录" },
   { href: "/scraper", label: "任务监控" },
 ];
 

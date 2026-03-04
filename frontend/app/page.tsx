@@ -102,6 +102,9 @@ export default function HomePage() {
           <Button variant="outline" onClick={() => (window.location.href = "/arbitrage")}>
             套利分析
           </Button>
+          <Button variant="outline" onClick={() => (window.location.href = "/alerts")}>
+            报警记录
+          </Button>
           <Button variant="outline" onClick={() => (window.location.href = "/scraper")}>
             爬虫管理
           </Button>
