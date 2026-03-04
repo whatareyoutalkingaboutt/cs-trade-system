@@ -60,9 +60,12 @@ MARKET_MAKER_TAGS_KEY = "items:market_maker_tags"
 MM_ACCUM_AMPLITUDE_MAX = 0.05
 MM_ACCUM_SUPPLY_SLOPE_7D_MAX = -0.15
 MM_ACCUM_BID_WALL_RATIO_MIN = 3.0
-MM_WASHOUT_SPREAD_MIN = 0.10
-MM_WASHOUT_SPREAD_MAX = 0.15
-MM_WASHOUT_TURNOVER_MULTIPLIER_MAX = 1.05
+MM_WASHOUT_SPREAD_MIN = _env_float("ANOMALY_MM_WASHOUT_SPREAD_MIN", 0.12)
+MM_WASHOUT_SPREAD_MAX = _env_float("ANOMALY_MM_WASHOUT_SPREAD_MAX", 0.16)
+MM_WASHOUT_TURNOVER_MULTIPLIER_MAX = _env_float("ANOMALY_MM_WASHOUT_TURNOVER_MULTIPLIER_MAX", 0.90)
+MM_WASHOUT_PRICE_SLOPE_1H_MAX = _env_float("ANOMALY_MM_WASHOUT_PRICE_SLOPE_1H_MAX", -0.015)
+MM_WASHOUT_SELL_SURGE_1H_MIN = _env_float("ANOMALY_MM_WASHOUT_SELL_SURGE_1H_MIN", 0.05)
+MM_WASHOUT_7D_AMPLITUDE_MIN = _env_float("ANOMALY_MM_WASHOUT_7D_AMPLITUDE_MIN", 0.08)
 MM_MARKUP_SUPPLY_SLOPE_1H_MAX = -0.10
 MM_MARKUP_PRICE_SLOPE_1H_MIN = 0.05
 MM_MARKUP_SPREAD_MAX = 0.03
@@ -514,17 +517,6 @@ def detect_market_maker_behavior() -> dict:
                 if sell_1h_ago_for_turnover and sell_1h_ago_for_turnover > 0
                 else 0.0
             )
-            washout_turnover_ok = (
-                turnover_now <= turnover_1h * MM_WASHOUT_TURNOVER_MULTIPLIER_MAX
-                if turnover_1h > 0
-                else current_volume <= int(volume_1h_ago * MM_WASHOUT_TURNOVER_MULTIPLIER_MAX)
-            )
-            if (
-                MM_WASHOUT_SPREAD_MIN <= spread_ratio <= MM_WASHOUT_SPREAD_MAX
-                and washout_turnover_ok
-            ):
-                tag = "[庄家洗盘/画线假摔]"
-
             supply_1h_ago = history_1h_map.get(item_id, {}).get("sell_listings", sell_num)
             price_1h_ago = history_1h_map.get(item_id, {}).get("price", ask)
             supply_slope_1h = (
@@ -537,6 +529,23 @@ def detect_market_maker_behavior() -> dict:
                 if price_1h_ago and price_1h_ago > 0
                 else 0.0
             )
+            washout_turnover_ok = (
+                turnover_now <= turnover_1h * MM_WASHOUT_TURNOVER_MULTIPLIER_MAX
+                if turnover_1h > 0
+                else current_volume <= int(volume_1h_ago * MM_WASHOUT_TURNOVER_MULTIPLIER_MAX)
+            )
+            washout_price_drop_ok = price_slope_1h <= MM_WASHOUT_PRICE_SLOPE_1H_MAX
+            washout_supply_surge_ok = supply_slope_1h >= MM_WASHOUT_SELL_SURGE_1H_MIN
+            washout_amplitude_ok = amplitude >= MM_WASHOUT_7D_AMPLITUDE_MIN
+            if (
+                MM_WASHOUT_SPREAD_MIN <= spread_ratio <= MM_WASHOUT_SPREAD_MAX
+                and washout_turnover_ok
+                and washout_price_drop_ok
+                and washout_supply_surge_ok
+                and washout_amplitude_ok
+            ):
+                tag = "[庄家洗盘/画线假摔]"
+
             markup_turnover_ok = (
                 turnover_now >= turnover_1h * MM_MARKUP_TURNOVER_MULTIPLIER_MIN
                 if turnover_1h > 0
