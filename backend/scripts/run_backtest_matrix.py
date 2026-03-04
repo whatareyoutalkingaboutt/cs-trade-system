@@ -154,7 +154,7 @@ def main() -> None:
     for label in ("24h", "72h", "7d"):
         row = summary["windows"].get(label, {})
         strategy = row.get("strategy", {})
-        fp = (row.get("market_maker_fp", {}) or {}).get("washout_phase", {})
+        fp = (row.get("market_maker_fp", {}) or {}).get("washout_phase") or {}
         lines.append(f"## {label}")
         lines.append(f"- 样本点: {strategy.get('evaluated_points', 0)}")
         lines.append(f"- 信号计数: {strategy.get('signals_counted', 0)}")
