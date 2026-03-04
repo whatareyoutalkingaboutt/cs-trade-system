@@ -1072,7 +1072,7 @@ def _build_csqaq_oneway_opportunities(
     if not pending:
         return opportunities
 
-    pending_item_ids = {opp.item_id for opp, _, _ in pending}
+    pending_item_ids = {opp.item_id for opp, _, _, _ in pending}
     series_map_24h = _load_hourly_cross_spread_series_map(
         session=session,
         item_ids=pending_item_ids,
