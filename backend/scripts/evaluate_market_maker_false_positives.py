@@ -168,7 +168,36 @@ def main() -> None:
         )
 
     if not alerts:
-        raise SystemExit("未找到可评估的 market_maker_alerts 告警。")
+        report = {
+            "generated_at": now.isoformat(),
+            "inputs": {
+                "days": int(args.days),
+                "since": since_ts.isoformat() if since_ts is not None else None,
+                "effective_cutoff": effective_cutoff.isoformat(),
+                "horizon_hours": int(args.horizon_hours),
+                "up_threshold_pct": float(args.up_threshold_pct),
+                "down_threshold_pct": float(args.down_threshold_pct),
+            },
+            "overall": {
+                "total": 0,
+                "insufficient": 0,
+                "valid": 0,
+                "success": 0,
+                "false_positive": 0,
+                "hit_rate_pct": None,
+                "false_positive_rate_pct": None,
+            },
+            "per_type": [],
+            "note": "no_market_maker_alerts_in_window",
+        }
+        output = json.dumps(report, ensure_ascii=False, indent=2)
+        print(output)
+        if args.report:
+            path = Path(args.report).expanduser().resolve()
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(output + "\n", encoding="utf-8")
+            logger.success("报告已写入 {}", path)
+        return
 
     item_ids = sorted({int(row["item_id"]) for row in alerts})
     min_ts = min(row["event_time"] for row in alerts) - timedelta(hours=2)
