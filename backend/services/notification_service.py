@@ -75,7 +75,13 @@ def _severity_label(severity: Any) -> str:
 
 
 def _item_label(row: Mapping[str, Any]) -> str:
-    return str(row.get("item_name") or row.get("item_name_en") or "-")
+    return str(
+        row.get("item_name_cn")
+        or row.get("item_name")
+        or row.get("name_cn")
+        or row.get("item_name_en")
+        or "-"
+    )
 
 
 def _qq_webhook_url() -> str:
@@ -312,7 +318,9 @@ def _persist_tiered_alert_logs(alerts: list[Mapping[str, Any]], trigger_type: st
         payload = dict(row)
         severity = _normalize_severity(payload.get("severity") or payload.get("level"), default="info")
         item_name = str(
-            payload.get("item_name")
+            payload.get("item_name_cn")
+            or payload.get("item_name")
+            or payload.get("name_cn")
             or payload.get("market_hash_name")
             or payload.get("title")
             or payload.get("item")
@@ -407,7 +415,9 @@ def notify_tiered_alerts(
             severity = _normalize_severity(row.get("severity"), default="info")
             severity_label = _severity_label(severity)
             item_name = str(
-                row.get("item_name")
+                row.get("item_name_cn")
+                or row.get("item_name")
+                or row.get("name_cn")
                 or row.get("market_hash_name")
                 or row.get("title")
                 or row.get("item")

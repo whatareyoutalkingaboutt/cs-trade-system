@@ -1349,10 +1349,22 @@ def monitor_market_maker_behavior_task() -> Dict[str, Any]:
 
     session = get_sessionmaker()()
     try:
-        name_rows = session.query(Item.id, Item.market_hash_name).filter(Item.id.in_(tagged_item_ids)).all()
+        name_rows = (
+            session.query(Item.id, Item.name_cn, Item.market_hash_name)
+            .filter(Item.id.in_(tagged_item_ids))
+            .all()
+        )
     finally:
         session.close()
-    name_map = {int(item_id): str(market_hash_name or item_id) for item_id, market_hash_name in name_rows}
+    name_map: Dict[int, Dict[str, str]] = {}
+    for item_id, name_cn, market_hash_name in name_rows:
+        item_id_int = int(item_id)
+        cn_name = str(name_cn or "").strip()
+        en_name = str(market_hash_name or "").strip()
+        name_map[item_id_int] = {
+            "cn": cn_name or en_name or str(item_id_int),
+            "en": en_name or cn_name or str(item_id_int),
+        }
 
     alerts: List[Dict[str, Any]] = []
     for item_id in tagged_item_ids[:max_scan_items]:
@@ -1365,10 +1377,13 @@ def monitor_market_maker_behavior_task() -> Dict[str, Any]:
         current_price = max(buff_price, youpin_price)
         if current_price < min_price:
             continue
+        item_names = name_map.get(item_id, {})
         alerts.append(
             {
                 "item_id": item_id,
-                "item_name": name_map.get(item_id, str(item_id)),
+                "item_name": str(item_names.get("cn") or item_id),
+                "item_name_cn": str(item_names.get("cn") or item_id),
+                "item_name_en": str(item_names.get("en") or item_id),
                 "type": _market_maker_type_from_tag(tag),
                 "severity": _market_maker_severity_from_tag(tag),
                 "message": f"{tag} 当前价={current_price:.2f} CNY",
