@@ -123,7 +123,7 @@ services:
       - dragonflydb
     volumes:
       - .:/app
-    command: celery -A backend.core.celery_app worker --loglevel=INFO --concurrency=${CELERY_WORKER_CONCURRENCY:-2} --max-tasks-per-child=1000 --pool=prefork --queues=default,steam,buff,verify --hostname=worker@%h
+    command: celery -A backend.core.celery_app worker --loglevel=INFO --concurrency=${CELERY_WORKER_CONCURRENCY:-2} --max-tasks-per-child=1000 --max-memory-per-child=${CELERY_MAX_MEMORY_PER_CHILD_KB:-384000} --pool=prefork --queues=default,steam,buff,verify --hostname=worker@%h
     restart: unless-stopped
 
   celery-beat:
