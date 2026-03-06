@@ -160,7 +160,7 @@ beat_schedule = {
     # 高优复核候选队列消费(每秒)
     'dispatch-high-priority-verify-queue': {
         'task': 'backend.scrapers.celery_tasks.dispatch_high_priority_verify_queue',
-        'schedule': timedelta(seconds=1),
+        'schedule': timedelta(seconds=max(1, int(os.getenv("VERIFY_QUEUE_DISPATCH_INTERVAL_SECONDS", "1")))),
         'kwargs': {
             'max_dispatch': 1,
         },
